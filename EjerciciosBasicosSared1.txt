@@ -1,0 +1,226 @@
+Ejercicio 1: El "Login" Básico
+Escenario: Tienes una pantalla donde el usuario escribe su nombre en un EditText. Quieres que, al pulsar un botón, ese nombre se guarde para que no tenga que escribirlo más.
+
+Tu tarea:
+
+Obtén el objeto SharedPreferences (llámalo como quieras).
+
+Abre el editor.
+
+Guarda un String con la clave "usuario" y el valor "Víctor".
+
+Confirma los cambios de forma asíncrona.
+/*class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // 1. El objeto LECTOR puede estar fuera (solo lee el archivo)
+        val preferencias = getSharedPreferences("mi_nombre", Context.MODE_PRIVATE)
+
+        binding.boton.setOnClickListener { 
+            val mi_nombre = binding.nombre.text.toString()
+
+            // 2. Abrimos el EDITOR justo antes de guardar
+            // 3. Hacemos el put y el apply seguidos
+            preferencias.edit().putString("nombre", mi_nombre).apply()
+        }
+    }
+}*/
+_________________________________________________________________________
+
+Ejercicio 2: El Interruptor de Modo Noche
+
+Escenario: Tu app tiene un Switch para activar el "Modo Noche". Necesitas guardar el estado de ese interruptor (activado o desactivado).
+
+Tu tarea:
+
+Abre el mismo archivo de antes.
+
+Guarda un valor booleano con la clave "dark_mode" y el valor true.
+/*binding.switc.setOnClickListener {
+    // Capturamos si el switch está ON u OFF en el momento del click
+    val estaActivado = binding.switc.isChecked 
+    
+    // Guardamos ese valor real (true o false)
+    pref.edit().putBoolean("dark_mode", estaActivado).apply()
+}*/
+
+Aplica los cambios.
+_______________________________________________________________________
+
+Ejercicio 3: La Lectura y el Valor por Defecto
+Escenario: Ahora estamos en una pantalla diferente. Quieres recuperar el nombre del usuario que guardamos en el Ejercicio 1.
+
+Tu tarea:
+
+Obtén el objeto SharedPreferences (asegúrate de usar el mismo nombre de archivo).
+
+Crea una variable llamada nombreRecuperado.
+
+Lee el valor de la clave "usuario".
+
+Ojo aquí: Si por algún motivo la clave no existe, el valor por defecto debe ser "Invitado".
+/*Actividad 3: Recuperando el dato
+Kotlin
+// 1. Obtener el objeto (mismo nombre de archivo: "mis_prefs")
+val preferencias = getSharedPreferences("mis_prefs", Context.MODE_PRIVATE)
+
+// 2. Crear la variable y 3. Leer el valor
+// 4. El valor por defecto "Invitado" va dentro del getString
+val nombreRecuperado = preferencias.getString("nombreUser", "Invitado")
+
+// Ahora ya puedes usarlo, por ejemplo:
+binding.recibido.text = nombreRecuperado
+¿Qué está pasando aquí realmente?
+Cuando ejecutas preferencias.getString("nombreUser", "Invitado"), Android hace lo siguiente detrás de las cámaras:
+
+Busca en el archivo XML la etiqueta <string name="nombreUser">.
+
+¿La encuentra? Te devuelve el texto que haya dentro (por ejemplo, "Víctor").
+
+¿No la encuentra? (porque es la primera vez que abres la app o se borraron los datos), entonces te devuelve el String que pusiste al final: "Invitado"*/
+___________________________________________________________________________
+Ejercicio 4: El Contador de Ejecuciones
+Escenario: Cada vez que el usuario abre la app, quieres sumarle 1 a un contador para saber cuántas veces nos ha visitado.
+
+Tu tarea:
+
+Lee un valor entero llamado "contador" (si no existe, empieza en 0).
+
+Súmale 1 a ese valor en una variable local.
+
+Abre el editor y vuelve a guardar el nuevo resultado en la misma clave "contador".
+/*override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    binding = ActivityMainBinding.inflate(layoutInflater)
+    setContentView(binding.root)
+
+    val preferencias = getSharedPreferences("mis_prefs", Context.MODE_PRIVATE)
+
+    // 1. LEE el valor actual de la memoria. Si no existe, usa 0.
+    // ¡Este es el paso que faltaba!
+    val valorGuardado = preferencias.getInt("contador", 0)
+
+    // 2. SÚMALE 1 en una variable local
+    val nuevoContador = valorGuardado + 1
+
+    // 3. ABRE el editor y GUARDA el nuevo resultado
+    preferencias.edit().putInt("contador", nuevoContador).apply()
+
+    // Opcional: Mostrarlo en pantalla para verificar
+    binding.ejecuciones.text = "Visitas: $nuevoContador"
+    
+    // ... resto del código de WindowInsets
+}*/
+_____________________________________________________________
+
+Ejercicio 5: Limpieza de Datos (Logout)
+Escenario: El usuario pulsa el botón de "Cerrar Sesión" y quieres borrar solo su nombre de usuario, pero mantener el resto de ajustes (como el Modo Noche).
+
+Tu tarea:
+
+Abre el editor.
+
+Usa el método específico para eliminar la clave "usuario".
+
+Aplica los cambios.
+__________________________________________________________________
+Ejercicio 6: El Sistema de Puntos (High Score) 
+Escenario: El usuario ha terminado una partida y ha ganado 500 puntos. Quieres 
+guardar su récord. Tu tarea: 
+1. Obtén el objeto SharedPreferences. 
+2. Guarda un valor de tipo Long con la clave "puntuacion_maxima" y el valor 
+500L. 
+3. Asegúrate de confirmar los cambios. 
+/*// 1. Obtenemos el objeto SharedPreferences
+val preferencias = getSharedPreferences("mis_prefs", Context.MODE_PRIVATE)
+
+// 2. Definimos el valor (500L indica que es un Long)
+val recordActual = 500L
+
+// 3. Abrimos editor, guardamos con la clave correcta y confirmamos (.apply)
+preferencias.edit().putLong("puntos_maxima", recordActual).apply()*/
+__________________________________________________________________
+Ejercicio 7: ¿Es la primera vez? 
+Escenario: Quieres mostrar un mensaje de "Bienvenido" solo la primera vez que el 
+usuario abre la app. Tu tarea: 
+1. Lee un valor booleano llamado "es_primera_vez". 
+2. El valor por defecto debe ser true. 
+3. Si el valor es true, imprime un mensaje en consola y luego cambia ese valor en 
+el archivo a false para que no vuelva a aparecer. 
+/*override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    binding = ActivityMainBinding.inflate(layoutInflater)
+    setContentView(binding.root)
+
+    val preferencias = getSharedPreferences("mis_prefs", Context.MODE_PRIVATE)
+
+    // 1. INTENTAMOS LEER. 
+    // Si la app es nueva, "bienvenida" NO existe, así que nos dará el valor por defecto: TRUE.
+    val esPrimeraVez = preferencias.getBoolean("bienvenida", true)
+
+    if (esPrimeraVez) {
+        // 2. MOSTRAR EL MENSAJE
+        Toast.makeText(this, "¡Hooooola! Esta es tu primera vez aquí", Toast.LENGTH_LONG).show()
+
+        // 3. CAMBIAR EL VALOR A FALSE Y GUARDAR
+        // Así, la próxima vez que abras la app, el paso 1 leerá FALSE y no entrará aquí.
+        preferencias.edit().putBoolean("bienvenida", false).apply()
+    }
+
+    // ... resto del código
+}*/
+____________________________________________________________________
+Ejercicio 8: Guardar la Edad del Usuario 
+Escenario: En un formulario de perfil, el usuario ingresa su edad en un EditText. Tu 
+tarea: 
+1. Captura el valor del EditText convirtiéndolo a Int. 
+2. Guarda ese entero con la clave "edad_usuario"
+/*package com.example.log
+
+import android.content.Context
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.log.databinding.ActivityMainBinding
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    val preferencias=getSharedPreferences("mis_prf", Context.MODE_PRIVATE)
+binding.registro.setOnClickListener {
+    val edad=binding.edad.text.toString().toIntOrNull()
+    if(edad != null){
+        preferencias.edit().putInt("edadUser",edad).apply()
+    }else{
+        Toast.makeText(this,"Introduce una edad", Toast.LENGTH_LONG).show()
+    }
+
+}
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+}*/
+_______________________________________________________________________
+Ejercicio 9: El Borrado Total (Factory Reset) 
+Escenario: En los ajustes de la app, hay un botón de "Borrar todos los datos". Tu tarea: 
+1. Abre el editor de tus preferencias. 
+2. Usa el método necesario para eliminar todas las claves y valores del archivo de 
+un solo golpe. 
+3. Aplica los cambios. 
+/*// Borra TODO el contenido del archivo "mis_prf"
+preferencias.edit().clear().apply()*/
