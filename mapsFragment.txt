@@ -1,0 +1,142 @@
+package com.example.romper
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+
+class MapsFragment : Fragment(), OnMapReadyCallback {
+
+    private lateinit var mMap: GoogleMap
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflamos el layout del fragmento
+        return inflater.inflate(R.layout.fragment_maps, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        // Buscamos el fragmento de mapa dentro de nuestro fragmento
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        // Ejemplo: Marcador en Madrid
+        val madrid = LatLng(40.4167, -3.7037)
+        mMap.addMarker(MarkerOptions().position(madrid).title("Marcador en Madrid"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(madrid, 10f))
+    }
+}
+__________________________________________
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MapsFragment" />
+
+</FrameLayout>
+_________________________
+Gemini ha dicho
+¡Ah, perfecto! Lo que tienes ahora es una Activity (una pantalla completa), pero si lo que quieres es un Fragment para poder insertarlo dentro de otra pantalla o usarlo en un diseño con pestañas, el código cambia un poco.
+
+El error común es que la plantilla por defecto de Android Studio te crea una AppCompatActivity, pero para que sea un fragmento de verdad, debe heredar de Fragment.
+
+Aquí tienes cómo convertir ese código a un Fragment funcional:
+
+1. El archivo de Layout (fragment_maps.xml)
+En lugar de tener el <fragment> solo, es mejor envolverlo en un contenedor (como un FrameLayout) para que no te dé problemas de inflado.
+
+XML
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MapsFragment" />
+
+</FrameLayout>
+2. El código del Fragment (MapsFragment.kt)
+Los fragmentos no usan onCreate para el diseño, sino onCreateView. Aquí tienes la versión limpia:
+
+Kotlin
+package com.example.romper
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+
+class MapsFragment : Fragment(), OnMapReadyCallback {
+
+    private lateinit var mMap: GoogleMap
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflamos el layout del fragmento
+        return inflater.inflate(R.layout.fragment_maps, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        // Buscamos el fragmento de mapa dentro de nuestro fragmento
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        // Ejemplo: Marcador en Madrid
+        val madrid = LatLng(40.4167, -3.7037)
+        mMap.addMarker(MarkerOptions().position(madrid).title("Marcador en Madrid"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(madrid, 10f))
+    }
+}
+Diferencias clave que debes notar:
+Herencia: Cambiamos AppCompatActivity por Fragment.
+
+childFragmentManager: Dentro de un fragmento, para buscar otro fragmento (el de Google Maps), usamos childFragmentManager en lugar de supportFragmentManager.
+
+Ciclo de vida: Usamos onViewCreated para asegurar que la vista ya existe antes de llamar al mapa.
+
+¿Cómo lo usas ahora?
+Ahora puedes llamar a este MapsFragment desde tu MainActivity (o cualquier otra actividad) usando un FragmentTransaction o simplemente poniéndolo en tu diseño principal.
