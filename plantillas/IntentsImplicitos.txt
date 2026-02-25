@@ -1,0 +1,116 @@
+// ==============================================
+// 📋 LISTA CORRECTA - SOLO INTENTS (sin contratos)
+// ==============================================
+
+// 🌐 WEB - Abrir navegador
+Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com"))
+
+// 🔍 BÚSQUEDA WEB
+Intent(Intent.ACTION_WEB_SEARCH).apply {
+    putExtra(SearchManager.QUERY, "texto a buscar")
+}
+
+// 📞 TELÉFONO - Abrir marcador
+Intent(Intent.ACTION_DIAL, Uri.parse("tel:123456789"))
+
+// 📞 LLAMADA DIRECTA (requiere permiso)
+Intent(Intent.ACTION_CALL, Uri.parse("tel:123456789"))
+
+// 💬 SMS
+Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:123456789")).apply {
+    putExtra("sms_body", "Mensaje")
+}
+
+// ✉️ EMAIL
+Intent(Intent.ACTION_SEND).apply {
+    type = "message/rfc822"
+    putExtra(Intent.EXTRA_EMAIL, arrayOf("destino@email.com"))
+    putExtra(Intent.EXTRA_SUBJECT, "Asunto")
+    putExtra(Intent.EXTRA_TEXT, "Cuerpo")
+}
+
+// 📱 COMPARTIR TEXTO
+Intent(Intent.ACTION_SEND).apply {
+    type = "text/plain"
+    putExtra(Intent.EXTRA_TEXT, "Texto a compartir")
+}
+
+// 📸 CÁMARA - SOLO abrir la cámara (SIN resultado)
+Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+// ⚠️ NOTA: Esto SOLO abre la cámara. Para recibir la foto necesitas un CONTRATO (NO es un Intent)
+
+// 🎥 CÁMARA VIDEO - SOLO abrir grabación
+Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+// ⚠️ NOTA: Esto SOLO abre la cámara de video
+
+// 🗺️ MAPAS - Ver ubicación
+Intent(Intent.ACTION_VIEW, Uri.parse("geo:37.7749,-122.4194"))
+
+// 🗺️ MAPAS - Buscar lugar
+Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=restaurantes"))
+
+// 🗺️ NAVEGACIÓN GPS
+Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=Madrid"))
+
+// ⏰ ALARMA
+Intent(AlarmClock.ACTION_SET_ALARM).apply {
+    putExtra(AlarmClock.EXTRA_HOUR, 8)
+    putExtra(AlarmClock.EXTRA_MINUTES, 30)
+}
+
+// ⏱️ TEMPORIZADOR
+Intent(AlarmClock.ACTION_SET_TIMER).apply {
+    putExtra(AlarmClock.EXTRA_LENGTH, 300)
+}
+
+// 📅 CALENDARIO - Nuevo evento
+Intent(Intent.ACTION_INSERT).apply {
+    data = CalendarContract.Events.CONTENT_URI
+    putExtra(CalendarContract.Events.TITLE, "Reunión")
+}
+
+// 📂 SELECCIONAR ARCHIVO
+Intent(Intent.ACTION_GET_CONTENT).apply {
+    type = "*/*"
+    addCategory(Intent.CATEGORY_OPENABLE)
+}
+
+// 🎵 SELECCIONAR AUDIO
+Intent(Intent.ACTION_GET_CONTENT).apply {
+    type = "audio/*"
+}
+
+// 📷 SELECCIONAR IMAGEN
+Intent(Intent.ACTION_GET_CONTENT).apply {
+    type = "image/*"
+}
+
+// ⚙️ AJUSTES GENERALES
+Intent(Settings.ACTION_SETTINGS)
+
+// 📶 AJUSTES WIFI
+Intent(Settings.ACTION_WIFI_SETTINGS)
+
+// 🔋 AJUSTES BATERÍA
+Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
+
+// 🔔 AJUSTES SONIDO
+Intent(Settings.ACTION_SOUND_SETTINGS)
+
+// 👤 CONTACTOS - Ver todos
+Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI)
+
+// 👤 CONTACTOS - Nuevo contacto
+Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI)
+
+// 🎮 PLAY STORE - Abrir app
+Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.paquete.app"))
+
+// 💾 INSTALAR APK
+Intent(Intent.ACTION_VIEW).apply {
+    data = apkUri
+    type = "application/vnd.android.package-archive"
+}
+
+// 📡 BLUETOOTH - Activar
+Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)

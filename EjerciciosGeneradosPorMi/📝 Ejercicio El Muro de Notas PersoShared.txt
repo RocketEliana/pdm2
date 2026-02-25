@@ -1,0 +1,28 @@
+📝 Ejercicio: "El Muro de Notas Personalizado"
+Escenario
+Vas a crear una app de una sola pantalla que funcione como un post-it digital. El usuario podrá escribir una nota, pero lo más importante es que podrá personalizar cómo se ve su zona de trabajo.
+
+Requisitos Técnicos
+Debes usar dos ficheros de SharedPreferences:
+
+note_content_prefs: Para guardar el texto de la nota.
+
+visual_config_prefs: Para guardar el tamaño de la fuente y el color de fondo.
+
+La Interfaz (UI) debe tener:
+Un EditText grande: Para escribir la nota (multilínea).
+
+Un SeekBar (Barra de progreso): Para elegir el tamaño de la letra (de 12sp a 30sp).
+
+Un RadioGroup con 3 opciones: Para elegir el color de fondo de la nota (Amarillo post-it, Blanco o Azul claro).
+
+Un Botón "Auto-guardado": Al pulsarlo, se guarda todo.
+
+Un TextView que muestre la "Última vez guardado": Debe mostrar la fecha y hora exacta (pista: guarda un String con el formato de fecha).
+
+Objetivos de Programación:
+Persistencia Real: Al cerrar y abrir la app, la nota debe seguir ahí, con el mismo tamaño de letra y el mismo color de fondo que eligió el usuario.
+
+Uso de OnSeekBarChangeListener: Debes capturar el cambio del SeekBar para actualizar el tamaño del texto del EditText mientras el usuario mueve la barra.
+
+Lógica de colores: Dependiendo de qué RadioButton esté marcado, cambiarás el backgroundColor del EditText.

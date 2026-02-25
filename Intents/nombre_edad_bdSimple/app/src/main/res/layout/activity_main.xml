@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/nombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="108dp"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="Name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <SeekBar
+        android:id="@+id/edad"
+        android:layout_width="176dp"
+        android:layout_height="23dp"
+        android:layout_marginEnd="28dp"
+        android:min="18"
+        android:max="90"
+        app:layout_constraintBottom_toTopOf="@+id/enviar"
+        app:layout_constraintEnd_toEndOf="@+id/nombre"
+        app:layout_constraintTop_toBottomOf="@+id/nombre"
+        app:layout_constraintVertical_bias="0.503" />
+
+    <Button
+        android:id="@+id/enviar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="140dp"
+        android:layout_marginBottom="204dp"
+        android:text="Enviar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="78dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="32dp"
+        android:text=""
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="@+id/edad"
+        app:layout_constraintTop_toBottomOf="@+id/edad" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
