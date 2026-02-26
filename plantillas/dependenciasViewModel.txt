@@ -1,0 +1,11 @@
+libs->
+ktx-activity = "1.8.2"
+ktx-fragment = "1.6.2"
+librerías
+# by viewModel
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version = "1.8.2" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version = "1.6.2" }
+en gradl->
+ //viewModel
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.fragment.ktx)

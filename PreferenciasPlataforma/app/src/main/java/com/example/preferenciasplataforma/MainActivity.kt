@@ -1,75 +1,78 @@
 package com.example.preferenciasplataforma
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
-import android.widget.ArrayAdapter
+import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.preferenciasplataforma.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
-    companion object {//para llamar fuera val prefs = getSharedPreferences(MainActivity.PREFS_NAME_SETTINGS, Context.MODE_PRIVATE)
-        // Nombre del archivo SharedPreferences (puedo tener más de uno)
-        const val PREFS_NAME_PERFIL = "user_profile_prefs"
-        const val PREFS_NAME_SETTINGS="app_settings_prefs"
-        const val NOTIFICACION_KEY = "notificaciones" // Clave
-        const val AHORRO_KEY="ahorro"
-        const val TEMA_KEY="tema"
-        const val NOMBRE_KEY="nombre"
 
+
+class MainActivity : AppCompatActivity() {
+    companion object{
+        const val PREF_CONFIGURACION="prefsConfiguracion"
+        const val PREF_NOTA="preferenceNota"
+        const val SIZE="size"
+        const val NOTA="nota"
+        const val COLOR="color"
+        const val FECHA="fecha"
     }
 
+
     private lateinit var binding: ActivityMainBinding
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val pref_nota=getSharedPreferences(PREF_NOTA,Context.MODE_PRIVATE)
+        val pref_configuracion=getSharedPreferences(PREF_CONFIGURACION, Context.MODE_PRIVATE)
+        val prefSize=pref_configuracion.getFloat(SIZE,6.0f)
+        val prefColor=pref_configuracion.getString(COLOR,"#3F51B5")
+        val nota=pref_nota.getInt(NOTA,1)
+        val fecha=pref_configuracion.getString(FECHA, java.time.LocalDate.now().toString())
+        binding.nota.setTextSize(prefSize)
+        binding.nota.text=nota.toString().toInt()
+        binding.main.setBackgroundColor(Color.parseColor(prefColor))
+        binding.fecha.text=fecha
+        var sizeNota=6
+        binding.seekTamamioFuente.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
-        val prefConfiguracion = getSharedPreferences(PREFS_NAME_SETTINGS, Context.MODE_PRIVATE)
-        val prefsPerfil = getSharedPreferences(PREFS_NAME_PERFIL, Context.MODE_PRIVATE)
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                // Se ejecuta cada vez que mueves la barra
+                // 'progress' es el valor actual (de 0 a 10)
+                sizeNota=progress
 
-        // --- 1. CARGAR DATOS Y MOSTRARLOS EN LA UI ---
-        // Si no haces esto, los campos siempre aparecerán vacíos al abrir
-        binding.nombre.setText(prefsPerfil.getString(NOMBRE_KEY, ""))
-        binding.notificaciones.isChecked = prefConfiguracion.getBoolean(NOTIFICACION_KEY, false)
-        binding.ahorro.isChecked = prefConfiguracion.getBoolean(AHORRO_KEY, false)
+            }
 
-        val listaTemas = listOf("Oscuro", "Claro", "Sistema")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listaTemas)
-        binding.tema.adapter = adapter
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                // Se ejecuta cuando el usuario TOCA la barra
+            }
 
-        val temaGuardado = prefConfiguracion.getString(TEMA_KEY, "Claro")
-        binding.tema.setSelection(listaTemas.indexOf(temaGuardado))
-
-        // --- 2. BOTÓN GUARDAR ---
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                // Se ejecuta cuando el usuario SUELTA la barra
+            }
+        })
         binding.guardar.setOnClickListener {
-            val nombre = binding.nombre.text.toString()
-            val tema = binding.tema.selectedItem.toString()
-
-            prefsPerfil.edit().putString(NOMBRE_KEY, nombre).apply()
-
-            // Puedes encadenar edits para que sea más eficiente
-            prefConfiguracion.edit()
-                .putBoolean(NOTIFICACION_KEY, binding.notificaciones.isChecked)
-                .putBoolean(AHORRO_KEY, binding.ahorro.isChecked)
-                .putString(TEMA_KEY, tema)
-                .apply()
+                   pref_nota.edit().putInt(NOTA,binding.nota.text.toInt).apply()
+                   val color=binding.grupoColores.checkedRadioButtonId
+                  var colorString=""
+                  when(color){
+                      R.id.azul->colorString="#3F51B5"
+                      R.id.verde->colorString="#00796B"
+                      R.id.amarillo->colorString="#00796B"
+                  }
+            val fechaActual= java.time.LocalDate.now()
+            pref_configuracion.edit().putString(COLOR,colorString).putFloat(SIZE,sizeNota.toFloat()).putString(FECHA,fechaActual.toString()).apply()
+        }
+        binding.limpiar.setOnClickListener {
+            pref_nota.edit().clear().apply()
+            pref_configuracion.edit().clear().apply()
         }
 
-        // --- 3. BOTÓN RESTABLECER ---
-        binding.restablecer.setOnClickListener {
-            // Borramos los datos
-            prefsPerfil.edit().clear().apply()
-            prefConfiguracion.edit().clear().apply()
-
-            // ¡IMPORTANTE! Actualizamos la interfaz para que el usuario lo vea
-            binding.nombre.setText("")
-            binding.notificaciones.isChecked = false
-            binding.ahorro.isChecked = false
-            binding.tema.setSelection(1) // Selecciona "Claro"
-        }
     }
 }

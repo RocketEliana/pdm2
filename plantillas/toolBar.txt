@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Mi Log"/>
+
+    <Button
+        android:id="@+id/acceso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="264dp"
+        android:layout_marginEnd="156dp"
+        android:text="Acceso!"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+__________________________________________________
+package com.example.loginpersonalizado
+
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.loginpersonalizado.databinding.ActivityMainBinding
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_item, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.cerrar -> {
+                cerrarSesion()
+                true
+            }
+
+            R.id.acercade -> {
+                Toast.makeText(this, "TheBug,2026", Toast.LENGTH_LONG).show()
+            true}
+
+            else ->  super.onOptionsItemSelected(item)//"Que se encargue Android"
+        }
+    }
+
+    private fun cerrarSesion(): Boolean {}
+}
+________________________________________________
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/acercade"
+        android:title="Acerca de..."
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/login"
+        android:title="Login"
+        app:showAsAction="never">
+    <menu>
+        <item
+            android:id="@+id/cerrar"
+            android:title="Cerrar sesion"/>
+    </menu>
+
+    </item>
+</menu>
