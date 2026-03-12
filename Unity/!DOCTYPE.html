@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Kotlin - Colecciones y Funciones</title>
+    <style>
+        @page { margin: 2cm; }
+        body { 
+            font-family: Arial, sans-serif;
+            max-width: 850px; 
+            margin: 0 auto; 
+            padding: 20px;
+            line-height: 1.7;
+            font-size: 14px;
+            color: #0d47a1;
+        }
+        h1 { 
+            color: #d32f2f; 
+            border-bottom: 3px solid #d32f2f; 
+            padding-bottom: 10px;
+            font-size: 28px;
+            margin-top: 30px;
+        }
+        h2 { 
+            color: #1976d2; 
+            margin-top: 25px;
+            font-size: 22px;
+        }
+        h3 {
+            color: #00897b;
+            margin-top: 18px;
+            font-size: 18px;
+        }
+        h4 {
+            color: #7b1fa2;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0;
+        }
+        th { 
+            background: #e3f2fd; 
+            color: #1565c0; 
+            padding: 12px; 
+            text-align: left;
+            font-size: 14px;
+            border: 2px solid #90caf9;
+            font-weight: bold;
+        }
+        td { 
+            padding: 12px; 
+            border: 1px solid #90caf9;
+            font-size: 13px;
+            color: #0d47a1;
+            vertical-align: top;
+        }
+        tr:nth-child(even) { background: #f1f8ff; }
+        .code { 
+            background: #f0f4ff;
+            color: #0d47a1; 
+            padding: 15px; 
+            border: 2px solid #90caf9;
+            border-radius: 5px; 
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .keyword { color: #1565c0; font-weight: bold; }
+        .type { color: #00897b; font-weight: bold; }
+        .function { color: #6a1b9a; font-weight: bold; }
+        .comment { color: #7b1fa2; font-style: italic; }
+        .string { color: #c62828; }
+        .number { color: #1976d2; }
+        .box { 
+            background: #fff9e6; 
+            border: 2px solid #ffb74d; 
+            padding: 15px; 
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #e65100;
+        }
+        .box-green { 
+            background: #e8f5e9; 
+            border: 2px solid #66bb6a; 
+            padding: 15px; 
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+        .box-blue { 
+            background: #e3f2fd; 
+            border: 2px solid #42a5f5; 
+            padding: 15px; 
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #1565c0;
+        }
+        .box-red { 
+            background: #ffebee; 
+            border: 2px solid #ef5350; 
+            padding: 15px; 
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #c62828;
+        }
+        ul { margin-left: 25px; margin-top: 10px; }
+        li { margin: 8px 0; line-height: 1.6; color: #0d47a1; }
+        code {
+            background: #e8eaf6;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #5e35b1;
+            font-size: 13px;
+        }
+        .page-break { page-break-before: always; }
+        strong { color: #0277bd; }
+        p { color: #0d47a1; }
+        ol { color: #0d47a1; }
+    </style>
+</head>
+<body>
+
+<h1>📘 Colecciones y Funciones en Kotlin</h1>
+
+<div class="box-blue">
+    <strong>Guía completa de colecciones y funciones de orden superior</strong>
+</div>
+
+<hr>
+
+<h2>1️⃣ Colecciones en Kotlin</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Ejemplo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>List</strong></td>
+            <td>Colección ordenada e <strong>inmutable</strong> (no cambia después de creada)</td>
+            <td><code>val lista = listOf(1, 2, 3)</code></td>
+        </tr>
+        <tr>
+            <td><strong>MutableList</strong></td>
+            <td>Colección ordenada y <strong>mutable</strong> (puedes agregar, eliminar, modificar)</td>
+            <td><code>val lista = mutableListOf(1, 2, 3)</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<hr>
+
+<h2>2️⃣ Funciones de Orden Superior</h2>
+
+<p>Estas funciones operan sobre colecciones para <strong>transformarlas</strong>, <strong>filtrarlas</strong>, o realizar acciones específicas sin modificar directamente los objetos originales (excepto en algunos casos).</p>
+
+<hr>
+
+<h2>3️⃣ Funciones Principales</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Función</th>
+            <th>Propósito</th>
+            <th>Ejemplo básico</th>
+            <th>Nota</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>map</code></td>
+            <td>Transforma cada elemento de la colección en otro elemento</td>
+            <td><code>lista.map { it.nombre }</code><br>devuelve lista de nombres</td>
+            <td>Crea una nueva colección</td>
+        </tr>
+        <tr>
+            <td><code>filter</code></td>
+            <td>Filtra elementos que cumplen una condición</td>
+            <td><code>lista.filter { it.enStock }</code><br>devuelve productos en stock</td>
+            <td>Crea una nueva colección con elementos filtrados</td>
+        </tr>
+        <tr>
+            <td><code>forEach</code></td>
+            <td>Ejecuta una acción en cada elemento, sin devolver colección</td>
+            <td><code>lista.forEach { println(it) }</code></td>
+            <td>Usado para efectos o impresiones</td>
+        </tr>
+        <tr>
+            <td><code>reduce</code></td>
+            <td>Combina todos los elementos en un solo valor usando una función</td>
+            <td><code>numeros.reduce { acc, x -> acc + x }</code></td>
+            <td>Para sumar, multiplicar, etc.</td>
+        </tr>
+        <tr>
+            <td><code>any / all</code></td>
+            <td>Verifica si algún o todos los elementos cumplen una condición</td>
+            <td><code>lista.any { it.enStock }</code><br><code>lista.all { it.enStock }</code></td>
+            <td>Devuelven <code>true</code> o <code>false</code></td>
+        </tr>
+        <tr>
+            <td><code>find / first</code></td>
+            <td>Encuentra primer elemento que cumple condición</td>
+            <td><code>lista.find { it.nombre == "mesa" }</code></td>
+            <td>Devuelve elemento o <code>null</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<hr>
+
+<div class="page-break"></div>
+
+<h2>4️⃣ Funciones de Contexto</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Función</th>
+            <th>Propósito</th>
+            <th>Uso típico</th>
+            <th>Ejemplo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>let</code></td>
+            <td>Ejecuta un bloque si la variable no es <code>null</code>, devuelve resultado</td>
+            <td>Para trabajar con valores no nulos o transformar</td>
+            <td><code>valor?.let { println(it) }</code></td>
+        </tr>
+        <tr>
+            <td><code>apply</code></td>
+            <td>Ejecuta un bloque en el objeto, devuelve el objeto</td>
+            <td>Para configurar objetos</td>
+            <td><code>persona.apply { nombre = "Juan" }</code></td>
+        </tr>
+        <tr>
+            <td><code>run</code></td>
+            <td>Ejecuta un bloque y devuelve el resultado del bloque</td>
+            <td>Similar a <code>let</code>, pero más general</td>
+            <td><code>resultado = lista.run { size }</code></td>
+        </tr>
+        <tr>
+            <td><code>with</code></td>
+            <td>Ejecuta un bloque en un objeto, devuelve el resultado</td>
+            <td>Para realizar múltiples operaciones en un objeto</td>
+            <td><code>with(persona) { nombre = "Juan"; edad = 30 }</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<hr>
+
+<h2>5️⃣ Propiedades y Métodos Útiles</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Propiedad / Método</th>
+            <th>Propósito</th>
+            <th>Nota</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>copy()</code></td>
+            <td>Crea una copia del <code>data class</code>, con posibilidad de modificar algunos atributos</td>
+            <td>Solo en <code>data classes</code></td>
+        </tr>
+        <tr>
+            <td><code>toString()</code></td>
+            <td>Devuelve una representación en cadena del objeto</td>
+            <td>Útil para imprimir objetos</td>
+        </tr>
+        <tr>
+            <td><code>var / val</code></td>
+            <td><code>var</code>: variable mutable<br><code>val</code>: inmutable</td>
+            <td>Modificar <code>var</code> en objetos</td>
+        </tr>
+    </tbody>
+</table>
+
+<hr>
+
+<h2>6️⃣ Ejemplo Completo</h2>
+
+<p><strong>Supón que tienes una lista de productos y quieres:</strong></p>
+<ol>
+    <li>Filtrar los en stock</li>
+    <li>Modificar algunos atributos</li>
+    <li>Crear una lista nueva con cambios</li>
+</ol>
+
+<div class="code">
+<span class="keyword">data class</span> <span class="type">Producto</span>(<span class="keyword">val</span> nombre: <span class="type">String</span>, <span class="keyword">val</span> precio: <span class="type">Double</span>, <span class="keyword">var</span> enStock: <span class="type">Boolean</span>)
+
+<span class="keyword">fun</span> <span class="function">main</span>() {
+    <span class="keyword">val</span> lista = <span class="function">listOf</span>(
+        <span class="function">Producto</span>(<span class="string">"boli"</span>, <span class="number">2.5</span>, <span class="keyword">true</span>),
+        <span class="function">Producto</span>(<span class="string">"mesa"</span>, <span class="number">22.5</span>, <span class="keyword">true</span>),
+        <span class="function">Producto</span>(<span class="string">"tiza"</span>, <span class="number">2.5</span>, <span class="keyword">false</span>)
+    )
+    
+    <span class="comment">// Filtrar productos en stock</span>
+    <span class="keyword">val</span> enStock = lista.<span class="function">filter</span> { it.enStock }
+    
+    <span class="comment">// Modificar todos los productos para que estén en stock</span>
+    lista.<span class="function">forEach</span> { it.enStock = <span class="keyword">true</span> }
+    
+    <span class="comment">// Crear una lista nueva con map y copy</span>
+    <span class="keyword">val</span> listaModificada = lista.<span class="function">map</span> { it.<span class="function">copy</span>(enStock = <span class="keyword">false</span>) }
+    
+    <span class="comment">// Imprimir resultados</span>
+    enStock.<span class="function">forEach</span> { <span class="function">println</span>(it) }
+    listaModificada.<span class="function">forEach</span> { <span class="function">println</span>(it) }
+}
+</div>
+
+<hr>
+
+<div class="page-break"></div>
+
+<h2>📝 Resumen Visual</h2>
+
+<h3>🔹 map - Transformar</h3>
+<div class="box-green">
+    <p><strong>Propósito:</strong> Transforma cada elemento en otro</p>
+    <div class="code">
+<span class="keyword">val</span> nombres = productos.<span class="function">map</span> { it.nombre }
+<span class="comment">// [Producto1, Producto2, Producto3] → ["boli", "mesa", "tiza"]</span>
+    </div>
+</div>
+
+<h3>🔹 filter - Filtrar</h3>
+<div class="box-green">
+    <p><strong>Propósito:</strong> Filtra elementos que cumplen condición</p>
+    <div class="code">
+<span class="keyword">val</span> enStock = productos.<span class="function">filter</span> { it.enStock }
+<span class="comment">// Solo devuelve productos con enStock = true</span>
+    </div>
+</div>
+
+<h3>🔹 forEach - Recorrer</h3>
+<div class="box-green">
+    <p><strong>Propósito:</strong> Ejecuta acción en cada elemento</p>
+    <div class="code">
+productos.<span class="function">forEach</span> { <span class="function">println</span>(it.nombre) }
+<span class="comment">// Imprime: boli, mesa, tiza</span>
+    </div>
+</div>
+
+<h3>🔹 reduce - Combinar</h3>
+<div class="box-green">
+    <p><strong>Propósito:</strong> Combina todos los elementos en uno solo</p>
+    <div class="code">
+<span class="keyword">val</span> suma = <span class="function">listOf</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>).<span class="function">reduce</span> { acc, x -> acc + x }
+<span class="comment">// suma = 10</span>
+    </div>
+</div>
+
+<h3>🔹 any / all - Verificar</h3>
+<div class="box-green">
+    <p><strong>Propósito:</strong> Comprueba si alguno o todos cumplen condición</p>
+    <div class="code">
+<span class="keyword">val</span> hayEnStock = productos.<span class="function">any</span> { it.enStock }        <span class="comment">// true si al menos uno</span>
+<span class="keyword">val</span> todosEnStock = productos.<span class="function">all</span> { it.enStock }     <span class="comment">// true si todos</span>
+    </div>
+</div>
+
+<h3>🔹 find / first - Buscar</h3>
+<div class="box-green">
+    <p><strong>Propósito:</strong> Encuentra el primer elemento que cumple condición</p>
+    <div class="code">
+<span class="keyword">val</span> mesa = productos.<span class="function">find</span> { it.nombre == <span class="string">"mesa"</span> }
+<span class="comment">// Devuelve Producto("mesa", 22.5, true) o null</span>
+    </div>
+</div>
+
+<hr>
+
+<h2>📋 Funciones de Contexto - Ejemplos</h2>
+
+<h3>🔹 let</h3>
+<div class="box-blue">
+    <p><strong>Uso:</strong> Trabajar con valores no nulos</p>
+    <div class="code">
+<span class="keyword">val</span> nombre: <span class="type">String</span>? = <span class="string">"Juan"</span>
+nombre?.<span class="function">let</span> { <span class="function">println</span>(<span class="string">"Hola, $it"</span>) }  <span class="comment">// Solo si no es null</span>
+    </div>
+</div>
+
+<h3>🔹 apply</h3>
+<div class="box-blue">
+    <p><strong>Uso:</strong> Configurar objetos</p>
+    <div class="code">
+<span class="keyword">val</span> persona = <span class="function">Persona</span>().<span class="function">apply</span> {
+    nombre = <span class="string">"Juan"</span>
+    edad = <span class="number">30</span>
+}
+<span class="comment">// Devuelve el objeto persona configurado</span>
+    </div>
+</div>
+
+<h3>🔹 run</h3>
+<div class="box-blue">
+    <p><strong>Uso:</strong> Ejecutar bloque y devolver resultado</p>
+    <div class="code">
+<span class="keyword">val</span> tamano = productos.<span class="function">run</span> { size }
+<span class="comment">// tamano = 3</span>
+    </div>
+</div>
+
+<h3>🔹 with</h3>
+<div class="box-blue">
+    <p><strong>Uso:</strong> Operar sobre un objeto</p>
+    <div class="code">
+<span class="function">with</span>(persona) {
+    nombre = <span class="string">"Juan"</span>
+    edad = <span class="number">30</span>
+    <span class="function">println</span>(<span class="string">"$nombre tiene $edad años"</span>)
+}
+    </div>
+</div>
+
+<hr>
+
+<h2>🎯 Resumen Final</h2>
+
+<div class="box-green">
+    <ul>
+        <li>✅ Usa <code>map</code> para <strong>transformar</strong> listas</li>
+        <li>✅ Usa <code>filter</code> para <strong>filtrar</strong> elementos</li>
+        <li>✅ Usa <code>forEach</code> para <strong>recorrer</strong> y realizar acciones</li>
+        <li>✅ Usa <code>copy()</code> en <code>data classes</code> para crear versiones modificadas</li>
+        <li>✅ Usa <code>let</code>, <code>apply</code>, <code>run</code>, <code>with</code> para manipular objetos en contextos específicos</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>📊 Tabla Comparativa Rápida</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Función</th>
+            <th>¿Crea nueva lista?</th>
+            <th>¿Modifica original?</th>
+            <th>¿Qué devuelve?</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>map</code></td>
+            <td>✅ Sí</td>
+            <td>❌ No</td>
+            <td>Nueva lista transformada</td>
+        </tr>
+        <tr>
+            <td><code>filter</code></td>
+            <td>✅ Sí</td>
+            <td>❌ No</td>
+            <td>Nueva lista filtrada</td>
+        </tr>
+        <tr>
+            <td><code>forEach</code></td>
+            <td>❌ No</td>
+            <td>Puede modificar</td>
+            <td>Unit (nada)</td>
+        </tr>
+        <tr>
+            <td><code>reduce</code></td>
+            <td>❌ No</td>
+            <td>❌ No</td>
+            <td>Un solo valor</td>
+        </tr>
+        <tr>
+            <td><code>any</code></td>
+            <td>❌ No</td>
+            <td>❌ No</td>
+            <td><code>Boolean</code></td>
+        </tr>
+        <tr>
+            <td><code>find</code></td>
+            <td>❌ No</td>
+            <td>❌ No</td>
+            <td>Elemento o <code>null</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<hr>
+
+<p style="text-align: center; color: #1565c0; margin-top: 40px; font-size: 16px;">
+    <strong>📘 Kotlin • Colecciones • Funciones de Orden Superior</strong>
+</p>
+
+</body>
+</html>

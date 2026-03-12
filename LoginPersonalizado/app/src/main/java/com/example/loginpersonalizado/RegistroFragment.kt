@@ -9,14 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import com.example.loginpersonalizado.databinding.FragmentAltaBinding
 import com.example.loginpersonalizado.databinding.FragmentRegistroBinding
-import com.example.loginpersonalizado.viewModel.UserViewModel
+import com.example.loginpersonalizado.viewModel.bdViewModel
 
 class RegistroFragment : Fragment() {
     private var _binding: FragmentRegistroBinding? = null
-    private val viewModel: UserViewModel by activityViewModels ()
+    private val viewModel: bdViewModel by activityViewModels ()
     private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -31,7 +31,7 @@ class RegistroFragment : Fragment() {
         binding.registrar.setOnClickListener {
             val nombre=binding.nombre.text.toString()
             val password=binding.pasword.text.toString()
-            val id=viewModel.Id(nombre,password)
+            val id=viewModel.IdUser(nombre,password)
             if(id !=null){
                 preferences.edit().putBoolean(MainActivity.REGISTRADO,true).apply()
                 val intent= Intent(requireActivity(), MainActivity3::class.java)

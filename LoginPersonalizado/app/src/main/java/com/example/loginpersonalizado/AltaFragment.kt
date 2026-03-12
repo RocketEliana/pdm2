@@ -11,12 +11,12 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.loginpersonalizado.databinding.FragmentAltaBinding
 import com.example.loginpersonalizado.model.User
-import com.example.loginpersonalizado.viewModel.UserViewModel
+import com.example.loginpersonalizado.viewModel.bdViewModel
 
 
 class AltaFragment : Fragment() {
     private var _binding: FragmentAltaBinding? = null
-    private val viewModel: UserViewModel by activityViewModels()
+    private val viewModel: bdViewModel by activityViewModels()
     private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -31,10 +31,15 @@ class AltaFragment : Fragment() {
         val nombre=binding.nombre.text.toString()
         binding.alta.setOnClickListener {
             val user= User(nombre = nombre, contrasenia = password)
-            viewModel.insertar(user)
+            viewModel.insertarUser(user)
             preferences.edit().putBoolean(MainActivity.ALTA,true).apply()
-            val intent= Intent(requireActivity(), MainActivity3::class.java)
+            val intent= Intent(requireActivity(), MainActivity3::class.java).apply {  putExtra("Entrenador",nombre)}
+
             startActivity(intent)
+            //val intent = Intent(requireActivity(), MainActivity3::class.java).apply {
+            //    putExtra("Entrenador", nombre)}
+            //
+            //startActivity(intent)
 
             Toast.makeText(requireContext(),"Insertado con exito", Toast.LENGTH_LONG).show()
         }

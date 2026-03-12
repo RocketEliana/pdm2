@@ -1,0 +1,28 @@
+Gemini ha dicho
+¡Me parece una idea fantástica! Reforzar la base es lo que te dará la seguridad para aprobar el examen sin dudas.
+
+Vamos a hacer 3 ejercicios rápidos combinando lo que hemos visto: Variables, Start/Update y Movimiento con Control.
+
+Ejercicio 1: El "Super Salto" (Variables)
+Imagina que en tu examen te piden que el personaje pueda saltar, pero la fuerza del salto debe poder cambiarse desde el Inspector de Unity. Además, necesitas una caja (variable) para saber si el personaje tiene una "Super bota" puesta o no.
+
+Escribe las dos líneas de código para crear estas variables:
+
+Una variable pública de tipo decimal (para la fuerza de salto).
+
+Una variable pública de tipo verdadero/falso (para saber si tiene la bota).
+
+Ejercicio 2: El Mensaje de Bienvenida (Start vs Update)
+Queremos que, justo al darle al botón de Play, aparezca un mensaje en la consola que diga: "¡Cuidado con los enemigos!".
+
+¿En qué bloque pondrías este código y cómo se escribe la línea del mensaje?
+
+Bloque: void _________()
+
+Línea de código: Debug.Log("____________________");
+
+Ejercicio 3: El "Corredor hacia Atrás" (Lógica de Movimiento)
+Queremos que el personaje se mueva hacia la izquierda (Vector3.left) continuamente, pero el doble de rápido de lo normal.
+
+Completa la línea de movimiento dentro del Update:
+transform.position += Vector3._________ * (velocidad * _________) * Time.deltaTime;

@@ -1,3 +1,8 @@
+
+
+
+
+
 Ejercicio 11: El Intercambiador Básico (Sin paso de info)
 Escenario: Tienes una Activity con dos botones arriba ("Fragmento A" y "Fragmento B").
 Tarea:
