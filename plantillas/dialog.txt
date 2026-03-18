@@ -1,0 +1,10 @@
+ val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder
+                    .setMessage("Estas conociendo al desarrollador de la app")
+                    .setTitle("The bug")
+                    .setPositiveButton("vilver") { dialog, which ->
+                        // Do something.
+                    }
+
+                val dialog: AlertDialog = builder.create()
+                dialog.show()

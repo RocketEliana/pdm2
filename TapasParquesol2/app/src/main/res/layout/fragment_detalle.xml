@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detalle"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetalleFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="50dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/nombre"
+            android:layout_width="204dp"
+            android:layout_height="wrap_content"
+            tools:text="Nombre" />
+
+        <EditText
+            android:id="@+id/direccion"
+            android:layout_width="191dp"
+            android:layout_height="wrap_content"
+            tools:text="Direccion" />
+
+        <RatingBar
+            android:id="@+id/valoracion"
+            android:layout_width="192dp"
+            android:layout_height="wrap_content"
+            android:isIndicator="false" />
+        <EditText
+            android:id="@+id/latitud"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            tools:text="Lat"/>
+        <EditText
+            android:id="@+id/longitud"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            tools:text="long"/>
+
+        <EditText
+            android:id="@+id/web"
+            android:layout_width="211dp"
+            android:layout_height="wrap_content"
+            tools:text="web" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:id="@+id/borrar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Borrar"/>
+            <Button
+                android:id="@+id/modificar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Modificar"/>
+            <Button
+                android:id="@+id/maps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ir ubicacion"/>
+        </LinearLayout>
+
+
+
+
+
+
+    </LinearLayout>
+    </ScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
