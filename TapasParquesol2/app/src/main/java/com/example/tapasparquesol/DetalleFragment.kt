@@ -1,10 +1,14 @@
 package com.example.tapasparquesol
 
+import android.Manifest
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresPermission
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.activityViewModels
 import com.example.tapasparquesol.databinding.FragmentDetalleBinding
 import com.example.tapasparquesol.model.Bar
@@ -41,7 +45,10 @@ class DetalleFragment : Fragment() {
                 fragment.arguments=bundle
                 parentFragmentManager.beginTransaction().replace(R.id.detalle,fragment).addToBackStack(null).commit()
             }
-            binding.borrar.setOnClickListener {if(barRecibido !=null){viewModel.borrar(barRecibido)}  } }
+            binding.borrar.setOnClickListener @androidx.annotation.RequiresPermission(android.Manifest.permission.POST_NOTIFICATIONS) {
+                if(barRecibido !=null){
+                viewModel.borrar(barRecibido)
+                mostrarNotificacion(barRecibido.nombre)}  } }
         binding.modificar.setOnClickListener {
             val nombre=binding.nombre.text.toString()
             val direccion=binding.direccion.text.toString()
@@ -54,11 +61,18 @@ class DetalleFragment : Fragment() {
         }
 
         }
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    private fun mostrarNotificacion(nombre: String) {
 
+        val builder = NotificationCompat.Builder(requireContext(), "borrado_canal")
+            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setContentTitle("Bar eliminado")
+            .setContentText(nombre)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-
-
-
+        NotificationManagerCompat.from(requireContext())
+            .notify(System.currentTimeMillis().toInt(), builder.build())
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

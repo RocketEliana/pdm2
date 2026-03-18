@@ -1,0 +1,72 @@
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+package com.example.notificaciones
+
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+
+class MainActivity : AppCompatActivity() {
+
+    private val CANAL_ID = "mi_canal"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        crearCanal()
+        pedirPermiso()
+
+        val boton = findViewById<Button>(R.id.btnNotificacion)
+
+        boton.setOnClickListener {
+            mostrarNotificacion()
+        }
+    }
+
+    // 🔹 Crear canal (OBLIGATORIO desde Android 8)
+    private fun crearCanal() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val canal = NotificationChannel(
+                CANAL_ID,
+                "Canal básico",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(canal)
+        }
+    }
+
+    // 🔹 Pedir permiso (Android 13+)
+    private fun pedirPermiso() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1
+                )
+            }
+        }
+    }
+
+    // 🔹 Mostrar notificación
+    private fun mostrarNotificacion() {
+        val builder = NotificationCompat.Builder(this, CANAL_ID)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle("Título")
+            .setContentText("Mensaje de prueba")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        NotificationManagerCompat.from(this).notify(1, builder.build())
+    }
+}

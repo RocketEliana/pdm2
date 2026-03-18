@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         const val INICIADO="iniciado"
 
     }
+    private val CANAL_ID = "borrado_canal"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         preferencias=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
         val iniciado=preferencias.getBoolean(INICIADO,false)
+
+        crearCanal()
+        pedirPermiso()
 
 
 
@@ -94,6 +98,25 @@ class MainActivity : AppCompatActivity() {
             .commit()
 
     }
+    private fun crearCanal() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+            val canal = android.app.NotificationChannel(
+                CANAL_ID,
+                "Canal de borrado",
+                android.app.NotificationManager.IMPORTANCE_DEFAULT
+            )
+
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            manager.createNotificationChannel(canal)
+        }
+    }
+    private fun pedirPermiso() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+        }
+    }
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
