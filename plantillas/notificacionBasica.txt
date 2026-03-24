@@ -27,7 +27,14 @@ class MainActivity : AppCompatActivity() {
         val boton = findViewById<Button>(R.id.btnNotificacion)
 
         boton.setOnClickListener {
-            mostrarNotificacion()
+             if (ContextCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    mostrarNotificacion(ruta.nombre)
+                }
+
         }
     }
 
@@ -70,3 +77,4 @@ class MainActivity : AppCompatActivity() {
         NotificationManagerCompat.from(this).notify(1, builder.build())
     }
 }
+//IMPLEMNENTADA EN APP RUTA

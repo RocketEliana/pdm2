@@ -1,0 +1,12 @@
+    <FrameLayout
+        android:id="@+id/principal"
+        android:layout_width="409dp"
+        android:layout_height="477dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/arrancar">
+_____________________________________________________________
+
+
+ binding.principal.visibility= View.VISIBLE

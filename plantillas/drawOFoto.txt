@@ -1,0 +1,12 @@
+ fun cargarImagen(imageView: ImageView, ruta: Ruta, context: Context) {
+    if (ruta.imagen.startsWith("content") || ruta.imagen.startsWith("/")) {
+        imageView.setImageURI(android.net.Uri.parse(ruta.imagen))
+    } else {
+        val resId = context.resources.getIdentifier(
+            ruta.imagen,
+            "drawable",
+            context.packageName
+        )
+        imageView.setImageResource(resId)
+    }
+}

@@ -1,0 +1,3 @@
+android:background="?android:attr/windowBackground" 
+    android:clickable="true"
+    android:focusable="true"
