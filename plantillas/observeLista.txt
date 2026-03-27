@@ -1,0 +1,6 @@
+     viewModel.listaSala.observe(viewLifecycleOwner){listaSegura->
+                val listaSeleccionar=listaSegura.filter { it.id !=idRecibido }
+                adapter= AdapterSpinner(requireContext(),listaSeleccionar)
+                binding.spinner.adapter=adapter
+            }
+        }
