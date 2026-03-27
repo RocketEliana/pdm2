@@ -1,0 +1,171 @@
+1️⃣  Modelo  (XX.kt)
+Define la tabla en Room. id es Long autoincremental.
+
+@Entity(tableName = "xx")
+data class XX(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val nombre: String,
+    val categoria: String
+)
+
+2️⃣  DAO  (XXDao.kt)
+Insert devuelve Long. Consulta por id, update y delete incluidos.
+
+@Dao
+interface XXDao {
+
+    @Insert
+    fun insertar(xx: XX): Long          // devuelve el ID generado
+
+    @Update
+    fun actualizar(xx: XX)
+
+    @Delete
+    fun eliminar(xx: XX)
+
+    @Query("SELECT * FROM xx")
+    fun getAll(): LiveData<List<XX>>
+
+    @Query("SELECT * FROM xx WHERE id = :id")
+    fun getById(id: Long): XX           // consulta por ID (sin LiveData)
+}
+
+3️⃣  Base de datos  (AppDataBase.kt)
+Singleton. allowMainThreadQueries() para uso didáctico.
+
+@Database(entities = [XX::class], version = 1, exportSchema = false)
+abstract class AppDataBase : RoomDatabase() {
+
+    abstract fun xxDao(): XXDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDataBase? = null
+
+        fun getDatabase(context: Context): AppDataBase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDataBase::class.java,
+                    "xx_db"
+                )
+                .allowMainThreadQueries()   // Solo para prácticas
+                .build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
+
+4️⃣  Repository  (Repository.kt)
+Intermediario entre DAO y ViewModel. Expone todas las operaciones.
+
+class Repository(private val dao: XXDao) {
+
+    fun insertar(xx: XX): Long {
+        return dao.insertar(xx)
+    }
+
+    fun actualizar(xx: XX) {
+        dao.actualizar(xx)
+    }
+
+    fun eliminar(xx: XX) {
+        dao.eliminar(xx)
+    }
+
+    fun listaTodo(): LiveData<List<XX>> = dao.getAll()
+
+    fun getById(id: Long): XX = dao.getById(id)
+}
+
+5️⃣  ViewModel  (XXViewModel.kt)
+Expone LiveData a la UI. Delega todas las operaciones en Repository.
+
+class XXViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository: Repository
+    val listaXX: LiveData<List<XX>>
+
+    init {
+        val dao = AppDataBase.getDatabase(application).xxDao()
+        repository = Repository(dao)
+        listaXX = repository.listaTodo()
+    }
+
+    fun insertar(xx: XX): Long {
+        return repository.insertar(xx)
+    }
+
+    fun actualizar(xx: XX) {
+        repository.actualizar(xx)
+    }
+
+    fun eliminar(xx: XX) {
+        repository.eliminar(xx)
+    }
+
+    fun getById(id: Long): XX {
+        return repository.getById(id)
+    }
+}
+
+6️⃣  Activity  (MainActivity.kt)
+Uso completo: insertar comprobando el Long, actualizar, eliminar y consultar por ID.
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private val viewModel: XXViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Observar LiveData → UI se actualiza automáticamente
+        viewModel.listaXX.observe(this) { lista ->
+            // Actualizar RecyclerView, TextView, etc.
+        }
+
+        // INSERT → comprobar si fue correcto
+        val nuevo = XX(nombre = "Ejemplo", categoria = "CategoriaEjemplo")
+        val idGenerado = viewModel.insertar(nuevo)
+        if (idGenerado != -1L) {
+            // Insert correcto. idGenerado es el ID real en la BBDD
+        }
+
+        // CONSULTA POR ID
+        val xx = viewModel.getById(idGenerado)
+
+        // UPDATE → modificamos el objeto y lo guardamos
+        val modificado = xx.copy(nombre = "Nombre nuevo")
+        viewModel.actualizar(modificado)
+
+        // DELETE
+        viewModel.eliminar(xx)
+    }
+}
+
+7️⃣  Flujo MVVM simplificado
+
+UI (Activity/Fragment)
+        |
+        v
+ViewModel  (XXViewModel)
+        |
+        v
+Repository
+        |
+        v
+Room  (AppDataBase + XXDao)
+        |
+        v
+LiveData  →  Activity observa cambios automáticamente
+
+Insertar : Activity → ViewModel → Repository → DAO → Room → LiveData → UI
+Consultar: Activity observa LiveData → se actualiza automáticamente
+getById  : llamada directa, devuelve el objeto al momento
+
+⚠️  allowMainThreadQueries() solo para prácticas · En producción usar corrutinas o Executor
