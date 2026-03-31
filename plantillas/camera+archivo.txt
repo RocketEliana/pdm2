@@ -1,10 +1,41 @@
+package com.example.otra
+
+import android.Manifest
+import android.content.ContentValues
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.provider.MediaStore
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.example.otra.databinding.FragmentNuevoBinding
+import viewModelApp.AppViewModel
+
+
+class NuevoFragment : Fragment() {
+    // TODO: Rename and change types of parameters
+    private var _binding: FragmentNuevoBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: AppViewModel by activityViewModels()
+    private var bitmapFoto: Bitmap? = null
     private val launcherTomarFoto = registerForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         if (bitmap != null) {
-            binding.fotoPokemon
+            binding.imagen
                 .setImageBitmap(bitmap)
             bitmapFoto = bitmap
+            // OPCIONAL: Guardar automáticamente al tomarla
+            val uri = guardarFotoEnGaleria(bitmap)
+            if (uri != null) {
+                Toast.makeText(requireContext(), "Foto guardada en Galería", Toast.LENGTH_SHORT).show()
+            }
 
         }
     }
@@ -16,63 +47,54 @@
         if (concedido) launcherTomarFoto.launch(null)
         else Toast.makeText(requireContext(), "Permiso necesario", Toast.LENGTH_SHORT).show()
     }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentNuevoBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.fotoPokemon.setOnClickListener {
-            launcherPermisoCamara.launch(Manifest.permission.CAMERA)
-        }
-        private fun guardarFotoEnGaleria(bitmap: Bitmap): android.net.Uri? {
-// 1. Definimos un nombre único para el archivo usando la fecha actual en milisegundos
-// Esto evita que si haces dos fotos seguidas se llamen igual.
-            val fileName = "pokemon_${System.currentTimeMillis()}.jpg"
-
-// 2. Obtenemos el "gestor de contenido" del sistema.
-// Como estamos en un Fragment, usamos requireContext() para poder acceder a él.
-            val resolver = requireContext().contentResolver
-
-// 3. Creamos una "ficha de datos" (ContentValues) para decirle al sistema qué vamos a guardar.
-            val contentValues = ContentValues().apply {
-                // Nombre que se verá en la galería
-                put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, fileName)
-                // Tipo de archivo (MIME type)
-                put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-
-                // Si el móvil es Android 10 (API 29) o superior, podemos elegir la carpeta exacta.
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                    put(
-                        android.provider.MediaStore.Images.Media.RELATIVE_PATH,
-                        "Pictures/MisPokemons"
-                    )
-                }
+        binding.imagen
+            .setOnClickListener {
+                launcherPermisoCamara.launch(Manifest.permission.CAMERA)
             }
 
-// 4. Pedimos permiso al sistema para "insertar" una nueva imagen en la galería pública.
-// Esto nos devuelve una URI (una dirección o "enlace") al hueco que Android nos ha reservado.
-            val imageUri = resolver.insert(
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            )
 
-// 5. Si Android nos dio la dirección (el hueco no es nulo), procedemos a escribir los datos.
-            imageUri?.let { uri ->
-                try {
-                    // Abrimos una "tubería" (OutputStream) hacia esa dirección URI.
-                    // El '.use' asegura que la tubería se cierre sola al terminar, para no malgastar memoria.
-                    resolver.openOutputStream(uri).use { outputStream ->
-                        if (outputStream != null) {
-                            // Cogemos el bitmap (la foto en RAM) y la "estrujamos" (comprimimos)
-                            // para enviarla por la tubería en formato JPEG con calidad 90.
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
-                        }
+    }
+
+    private fun guardarFotoEnGaleria(bitmap: Bitmap): Uri? {
+        val fileName = "espectaculo_${System.currentTimeMillis()}.jpg"
+        val resolver = requireContext().contentResolver
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MisEspectaculos")
+            }
+        }
+
+        val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+        imageUri?.let { uri ->
+            try {
+                resolver.openOutputStream(uri).use { outputStream ->
+                    if (outputStream != null) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                        return uri // Devolvemos la URI si todo salió bien
                     }
-                } catch (e: Exception) {
-                    // Si algo falla (memoria llena, etc.), imprimimos el error y devolvemos nulo.
-                    e.printStackTrace()
-                    return null
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-
-// 6. Devolvemos la dirección final de la foto.
-// Esta dirección es la que deberías guardar luego en tu base de datos SQL.
-            return imageUri
         }
+        return null
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+//<uses-permission android:name="android.permission.CAMERA" />
