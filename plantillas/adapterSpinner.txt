@@ -1,0 +1,49 @@
+package com.example.rstaurantes
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.TextView
+import model.Hada
+
+class Adapter(context: Context, private val lista: MutableList<Hada>) :
+    ArrayAdapter<Hada>(context, 0, lista) {
+
+    /**
+     * Dibuja cada fila del Spinner (vista cerrada o lista)
+     */
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+
+        val itemView = convertView
+            ?: LayoutInflater.from(context).inflate(R.layout.item_vista, parent, false)
+
+        val hada = getItem(position)
+
+        val imagen = itemView.findViewById<ImageView>(R.id.im)
+        val nombre = itemView.findViewById<TextView>(R.id.nombre)
+
+        imagen.setImageResource(hada?.imagen ?: 0)
+        nombre.text = hada?.nombre
+
+        return itemView
+    }
+
+    /**
+     * Vista cuando el Spinner se despliega
+     */
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+        return getView(position, convertView, parent)
+    }
+
+    /**
+     * Actualiza la lista sin recrear el adapter
+     */
+    fun actualizarLista(nuevaLista: List<Hada>) {
+        lista.clear()
+        lista.addAll(nuevaLista)
+        notifyDataSetChanged()
+    }
+}

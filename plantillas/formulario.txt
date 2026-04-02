@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.498"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="168dp"
+            android:text="Mi Perfil" />
+
+        <ImageView
+            android:layout_width="123dp"
+            android:layout_height="72dp"
+            android:background="@drawable/descargar" />
+
+        <EditText
+            android:id="@+id/nombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:hint="Nombre"
+            android:inputType="text"/>
+        <EditText
+            android:id="@+id/apellidos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:hint="Apellidos"
+            android:inputType="text"/>
+        <EditText
+            android:id="@+id/mail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:hint="Mail"
+            android:inputType="text"/>
+
+        <RadioGroup
+            android:id="@+id/botonGroup"
+            android:layout_width="293dp"
+            android:layout_height="124dp"
+            android:gravity="center_vertical">
+
+            <RadioButton
+                android:id="@+id/hombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hombre" />
+
+            <RadioButton
+                android:id="@+id/mujer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mujer" />
+
+            <RadioButton
+                android:id="@+id/otros"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Otros" />
+        </RadioGroup>
+
+        <CheckBox
+            android:id="@+id/lectura"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lectura" />
+
+        <CheckBox
+            android:id="@+id/deporte"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Deporte" />
+
+        <CheckBox
+            android:id="@+id/arte"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Arte" />
+
+        <CheckBox
+            android:id="@+id/musica"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Musica" />
+
+        <Spinner
+            android:id="@+id/paises"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </Spinner>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="10"/>
+            <TextView
+                android:id="@+id/valorS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Satisfaccion">
+            </TextView>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Boletin">
+            </TextView>
+            <Switch
+                android:id="@+id/boletin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </Switch>
+        </LinearLayout>
+        <Button
+            android:id="@+id/aceptar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aceptar"/>
+        <TextView
+            android:id="@+id/resumen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+</ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
