@@ -2,6 +2,8 @@ package com.example.rstaurantes
 
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +26,13 @@ class AdapterLista(context: Context, private val lista: MutableList<Bar>) :
 
         nombre.text = bar?.nombre
         web.text = bar?.web
-
+        web.setOnClickListener {
+            bar?.web?.let { url ->
+                val uri = Uri.parse(url)
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                context.startActivity(intent)
+            }
+        }
         return itemView
     }
 
@@ -33,31 +41,5 @@ class AdapterLista(context: Context, private val lista: MutableList<Bar>) :
         lista.addAll(nuevaLista)
         notifyDataSetChanged()
     }
+
 }
-______________________________________________________________________________________________________________
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Crear adapter una sola vez
-        adapter = AdapterLista(requireContext(), mutableListOf())
-        binding.lista.adapter = adapter
-
-        // Observar datos
-        viewModel.listaBar.observe(viewLifecycleOwner) { lista ->
-            adapter.actualizarLista(lista)
-        }
-    }
-__________________________________________________________________________________________________
-
-// Preferida en Kotlin
-     binding.lista.setOnItemClickListener { parent, view, position, id ->
-
-            val listabar=viewModel.listaBar.value
-            val bar=listabar?.get(position)
-            val id=bar?.let { it.id }
-            (requireActivity() as MainActivity).cargarIdLista(id ?: -1)
-        }
-    }
-
