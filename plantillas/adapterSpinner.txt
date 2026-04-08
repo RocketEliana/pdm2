@@ -47,3 +47,27 @@ class Adapter(context: Context, private val lista: MutableList<Hada>) :
         notifyDataSetChanged()
     }
 }
+______________________________________________________
+ adapter = AdapterOrigenSpinner(this, mutableListOf())
+            binding.spinner.adapter=adapter
+
+            // Observar datos
+            viewModel.listaBiblioteca.observe(this) { lista ->
+                adapter.actualizarLista(lista)
+            }
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val biblioteca = adapter.getItem(position)
+                biblioteca?.let {
+                    val resource=it.imagen
+                binding.imagenInicio.setImageResource(resource)
+
+                    preferencias.edit().putLong(ID_FAVORITO,it.id).apply()
+                }
+
+
+
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }

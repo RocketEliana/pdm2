@@ -60,4 +60,11 @@ ________________________________________________________________________________
             (requireActivity() as MainActivity).cargarIdLista(id ?: -1)
         }
     }
+_______________________________________________
+ESTE ES MAS DIRECTO POR QUE LA LISTA YA TIENE ADAPTER
+binding.lista.setOnItemClickListener { parent, view, position, id ->
+    val bar = adapter.getItem(position)
+    val barId = bar?.id ?: -1
+    (requireActivity() as MainActivity).cargarIdLista(barId)
+}
 
