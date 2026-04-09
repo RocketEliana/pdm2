@@ -10,3 +10,51 @@
 ///05/05/2026 09:05
 ________________________
 EN BIBLOOTECA ABRIL SIN METER EN NINGUN TEXT NI NA
+ private fun mostrarCalendario(callback: (String) -> Unit) {
+        val calendario = Calendar.getInstance()
+
+        DatePickerDialog(
+            this,
+            { _, año, mes, dia ->
+                TimePickerDialog(
+                    this,
+                    { _, hora, min ->
+                        // Formateamos el resultado
+                        val fechaSeleccionada =
+                            String.format("%02d/%02d/%d %02d:%02d", dia, mes + 1, año, hora, min)
+
+                        // Ejecutamos el callback con el resultado
+                        callback(fechaSeleccionada)
+
+                    },
+                    calendario.get(Calendar.HOUR_OF_DAY),
+                    calendario.get(Calendar.MINUTE),
+                    true
+                ).show()
+            },
+            calendario.get(Calendar.YEAR),
+            calendario.get(Calendar.MONTH),
+            calendario.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+}
+___________________________________________________
+ mostrarCalendario { fechaFinal ->
+                val t = Traslado(origen = nombreOrigen, destino = nombreDestino, fecha = fechaFinal)
+                if(viewModel.insertaTraslado(t) != -1L){
+                    Toast.makeText(this,"Insertado",Toast.LENGTH_LONG).show()
+                }else{
+                    Toast.makeText(this,"No se ha podido realizar la insercion",Toast.LENGTH_LONG).show()
+
+                }
+            }
+            }
+
+
+        }
+________________________________
+para string y ordenar // Así está ahora ❌
+val fechaSeleccionada = String.format("%02d/%02d/%d %02d:%02d", dia, mes + 1, año, hora, min)
+
+// Así debe quedar ✅
+val fechaSeleccionada = String.format("%d/%02d/%02d %02d:%02d", año, mes + 1, dia, hora, min)

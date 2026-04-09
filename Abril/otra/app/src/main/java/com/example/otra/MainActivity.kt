@@ -1,7 +1,6 @@
 package com.example.otra
 
 import android.app.AlertDialog
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.otra.databinding.ActivityMainBinding
-import model.Espectaculo
 import model.User
 import viewModelApp.AppViewModel
 
@@ -20,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: AppViewModel by viewModels()
     private lateinit var preferences: SharedPreferences
+
     //ojo con el spaguetto!!!LLAMAR A FUNCIONES DECLARADAS ABAJO,MEJOR,MAS LEGIBLE
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,45 +27,38 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         preferences = getSharedPreferences("preferencias_app", Context.MODE_PRIVATE)
         val iniciado = preferences.getBoolean("iniciado", false)
-        if (!iniciado) {
-            val nombre = intent.getStringExtra("nombre")
-            val contrasenia = intent.getStringExtra("contrasenia")
-            val user: User?
-            if (nombre != null && contrasenia != null) {
-                user = viewModel.existeUser(nombre, contrasenia)
-                if (user != null) {
-                    val intent = Intent(this, Bienvenida::class.java)
-                    val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                    builder
-                        .setMessage("Bienvenido!")
-                        .setTitle("The bug")
-                        .setPositiveButton("seguir") { dialog, which ->
+        val nombre = intent.getStringExtra("nombre")
+        val contrasenia = intent.getStringExtra("contrasenia")
+        val user: User?
+        if (nombre != null && contrasenia != null) {
 
-                        }
+            user = viewModel.existeUser(nombre, contrasenia)
+            if (user != null) {
 
-                    val dialog: AlertDialog = builder.create()
-                    dialog.show()
-                    preferences.edit().putBoolean("iniciado", true).apply()
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder
+                    .setMessage("Bienvenido!")
+                    .setTitle("The bug")
+                    .setPositiveButton("seguir") { dialog, which ->
 
-                    startActivity(intent)
-                } else {
-                    val intent = Intent(this, Registro::class.java)
-                    startActivity(intent)
 
-                }
+                        val dialog: AlertDialog = builder.create()
+                        dialog.show()
+                    }
+                preferences.edit().putBoolean("iniciado", true).apply()
+                irBienvenida()
+
 
             } else {
-                val intent = Intent()
-                intent.component = ComponentName(
-                    "com.example.puydu",
-                    "com.example.puydu.MainActivity"
-                )
-                startActivity(intent)
-
+                irRegistro()
             }
+        }
+
+        if ((nombre == null || contrasenia == null) && iniciado) {
+           irBienvenida()
         } else {
-            val intent = Intent(this, Bienvenida::class.java)
-            startActivity(intent)
+            irRegistro()
+
         }
 
 
@@ -75,6 +67,16 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    fun irRegistro() {
+        val intent = Intent(this, Registro::class.java)
+        startActivity(intent)
+    }
+
+    fun irBienvenida() {
+        val intent = Intent(this, Bienvenida::class.java)
+        startActivity(intent)
     }
 
 }
