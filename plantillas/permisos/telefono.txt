@@ -1,0 +1,29 @@
+// PERMISO MANIFEST:
+// <uses-permission android:name="android.permission.CALL_PHONE" />
+
+private val launcherLlamada = registerForActivityResult(
+    ActivityResultContracts.RequestPermission()
+) { concedido ->
+    if (concedido) hacerLlamada(binding.telefonoD.text.toString())
+    else Toast.makeText(requireContext(), "Permiso denegado", Toast.LENGTH_SHORT).show()
+}
+
+private fun comprobarPermisoLlamada() {
+    val permiso = Manifest.permission.CALL_PHONE
+    if (ContextCompat.checkSelfPermission(requireContext(), permiso)
+        == PackageManager.PERMISSION_GRANTED) {
+        hacerLlamada(binding.telefonoD.text.toString())
+    } else {
+        launcherLlamada.launch(permiso)
+    }
+}
+
+private fun hacerLlamada(telefono: String) {
+    val intent = Intent(Intent.ACTION_CALL).apply {
+        data = Uri.parse("tel:$telefono")
+    }
+    startActivity(intent)
+}
+
+// En onViewCreated:
+binding.telefonoD.setOnClickListener { comprobarPermisoLlamada() }

@@ -1,0 +1,43 @@
+// PERMISO MANIFEST:
+// <uses-permission android:name="android.permission.CAMERA" />
+
+private var rutaImagen: String? = null
+
+private val launcherTomarFoto = registerForActivityResult(
+    ActivityResultContracts.TakePicturePreview()
+) { bitmap ->
+    if (bitmap != null) {
+        binding.imagen.setImageBitmap(bitmap)
+        val uri = guardarFotoEnGaleria(bitmap)
+        rutaImagen = uri.toString()
+    }
+}
+
+private val launcherPermisoCamara = registerForActivityResult(
+    ActivityResultContracts.RequestPermission()
+) { concedido ->
+    if (concedido) launcherTomarFoto.launch(null)
+    else Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+}
+
+// En onCreate:
+binding.imagen.setOnClickListener {
+    launcherPermisoCamara.launch(Manifest.permission.CAMERA)
+}
+
+private fun guardarFotoEnGaleria(bitmap: Bitmap): Uri? {
+    val resolver = contentResolver
+    val contentValues = ContentValues().apply {
+        put(MediaStore.Images.Media.DISPLAY_NAME, "foto_${System.currentTimeMillis()}.jpg")
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MisLugares")
+        }
+    }
+    val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+    imageUri?.let { uri ->
+        resolver.openOutputStream(uri)?.use { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it) }
+        return uri
+    }
+    return null
+}

@@ -1,0 +1,12 @@
+  binding.webD.setOnClickListener {
+                val web = binding.webD.text.toString().trim()
+                if (web.isEmpty()) {
+                    Toast.makeText(requireContext(), "No hay web disponible", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                // Añadir https:// si no lo tiene
+                val urlFinal = if (web.startsWith("http")) web else "https://$web"
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlFinal))
+                startActivity(intent)
+            }
+        }

@@ -1,0 +1,129 @@
+package com.example.mislugares
+
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.mislugares.databinding.ActivityMainBinding
+import com.example.mislugares.viewModel.AppViewModel
+import kotlin.math.pow
+
+// 🔴 IMPORTS NUEVOS
+import android.Manifest
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.LocationServices
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private val viewModel: AppViewModel by viewModels ()
+    private lateinit var adapter: AdapterLista
+
+    // 🔴 VARIABLE NUEVA
+    private lateinit var fusedLocationClient: com.google.android.gms.location.FusedLocationProviderClient
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        adapter= AdapterLista(this,mutableListOf())
+        binding.lista.adapter=adapter
+
+        viewModel.lista.observe(this){
+            lista->adapter.actualizarLista(lista)
+        }
+
+        binding.addBtn.setOnClickListener {
+            val intent= Intent(this, Nuevo::class.java)
+            startActivity(intent)
+        }
+
+        // 🔴 INICIALIZAR LOCALIZACIÓN
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // 🔴 COMPROBAR PERMISOS
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                100
+            )
+        } else {
+            obtenerUbicacion() // 🔴
+        }
+
+           }
+
+    // 🔴 FUNCIÓN NUEVA
+private fun obtenerUbicacion() {
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        != PackageManager.PERMISSION_GRANTED) {
+        return
+    }
+
+    fusedLocationClient.lastLocation
+        .addOnSuccessListener { location ->
+            if (location != null) {
+                val lat = location.latitude
+                val lon = location.longitude
+
+                // 🔴 COORDENADAS DEL LUGAR (ejemplo: León)
+                val latLugar = 42.5987
+                val lonLugar = -5.5671
+
+                // 🔴 CALCULAR DISTANCIA
+                val distancia = haversine(lat, lon, latLugar, lonLugar)
+
+                // 🔴 MOSTRAR RESULTADO
+                Toast.makeText(
+                    this,
+                    "Distancia: ${"%.2f".format(distancia)} km",
+                    Toast.LENGTH_LONG
+                ).show()
+
+            } else {
+                Toast.makeText(this, "No se pudo obtener ubicación", Toast.LENGTH_SHORT).show()
+            }
+        }
+}
+
+    // 🔴 RESULTADO PERMISOS
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                obtenerUbicacion() // 🔴
+            } else {
+                Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+   
+    fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val r = 6371.0
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = Math.sin(dLat / 2).pow(2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                Math.sin(dLon / 2).pow(2)
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        return r * c
+    }
+}

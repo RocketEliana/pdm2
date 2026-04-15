@@ -1,0 +1,121 @@
+Vale, te dejo el código completo limpio y bien colocado para que:
+
+
+ VARIABLES
+private var bitmapFoto: Bitmap? = null
+private var uri: Uri? = null
+private var rutaImagen: String? = null
+ LAUNCHER DE CÁMARA (SIN GUARDAR)
+private val launcherTomarFoto = registerForActivityResult(
+    ActivityResultContracts.TakePicturePreview()
+) { bitmap ->
+    if (bitmap != null) {
+        binding.imagen.setImageBitmap(bitmap)
+        bitmapFoto = bitmap
+
+        // No guardamos aún
+        uri = null
+        rutaImagen = null
+    }
+}
+ PERMISO CÁMARA
+private val launcherPermisoCamara = registerForActivityResult(
+    ActivityResultContracts.RequestPermission()
+) { concedido ->
+    if (concedido) launcherTomarFoto.launch(null)
+    else Toast.makeText(this, "Permiso necesario", Toast.LENGTH_SHORT).show()
+}
+ ONCREATE (CLICK IMAGEN)
+binding.imagen.setOnClickListener {
+    launcherPermisoCamara.launch(Manifest.permission.CAMERA)
+}
+ CHECKBOX (EN TU XML)
+<CheckBox
+    android:id="@+id/checkGaleria"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Guardar en galería"/>
+ BOTÓN REGISTRO (AQUÍ ESTÁ LO IMPORTANTE)
+binding.registro.setOnClickListener {
+
+    if (bitmapFoto == null) {
+        Toast.makeText(this, "Haz una foto primero", Toast.LENGTH_SHORT).show()
+        return@setOnClickListener
+    }
+
+    val guardarEnGaleria = binding.checkGaleria.isChecked
+
+    if (guardarEnGaleria) {
+        uri = guardarFotoEnGaleria(bitmapFoto!!)
+        rutaImagen = uri?.toString()
+
+        if (rutaImagen == null) {
+            Toast.makeText(this, "Error al guardar la imagen", Toast.LENGTH_SHORT).show()
+            return@setOnClickListener
+        }
+    } else {
+        rutaImagen = null
+    }
+
+    //  AQUÍ YA CREAS EL OBJETO CON TODO BIEN
+
+    val nombreL = binding.nombre.text.toString()
+    val direccionL = binding.direccion.text.toString()
+    val webL = binding.web.text.toString()
+    val telefonoL = binding.telefono.text.toString()
+    val descripcionL = binding.descripcion.text.toString()
+    val calificacionL = binding.calificacion.rating.toFloat()
+    val longitudL = binding.longitud.text.toString().toDoubleOrNull() ?: 0.0
+    val latitudL = binding.latitud.text.toString().toDoubleOrNull() ?: 0.0
+
+    val lugar = Lugar(
+        nombre = nombreL,
+        tipoIncon = tipoLugarIcon!!,
+        direccion = direccionL,
+        telefono = telefonoL,
+        web = webL,
+        descripcion = descripcionL,
+        fecha = fechaL!!,
+        calificacion = calificacionL,
+        foto = rutaImagen ?: "",
+        latitud = latitudL,
+        longitud = longitudL
+    )
+
+    viewModel.insertarL(lugar)
+    finish()
+}
+ FUNCIÓN GUARDAR (LA TUYA, CORRECTA)
+private fun guardarFotoEnGaleria(bitmap: Bitmap): Uri? {
+    val fileName = "lugar_${System.currentTimeMillis()}.jpg"
+    val resolver = contentResolver
+    val contentValues = ContentValues().apply {
+        put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MisEspectaculos")
+        }
+    }
+
+    val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+    imageUri?.let { uri ->
+        try {
+            resolver.openOutputStream(uri).use { outputStream ->
+                if (outputStream != null) {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                    return uri
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    return null
+}
+
+✔️ Ya no guardas mal la URI
+✔️ El usuario decide si guardar
+✔️ No hay null raros
+✔️ La lista debería mostrar bien los datos
+
