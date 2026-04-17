@@ -27,7 +27,7 @@ interface XXDao {
     fun getAll(): LiveData<List<XX>>
 
     @Query("SELECT * FROM xx WHERE id = :id")
-    fun getById(id: Long): XX           // consulta por ID (sin LiveData)
+    fun getById(id: Long): XX ?          // consulta por ID (sin LiveData)
 }
 
 3️⃣  Base de datos  (AppDataBase.kt)
@@ -77,7 +77,7 @@ class Repository(private val dao: XXDao) {
 
     fun listaTodo(): LiveData<List<XX>> = dao.getAll()
 
-    fun getById(id: Long): XX = dao.getById(id)
+    fun getById(id: Long): XX? = dao.getById(id)
 }
 
 5️⃣  ViewModel  (XXViewModel.kt)
@@ -106,7 +106,7 @@ class XXViewModel(application: Application) : AndroidViewModel(application) {
         repository.eliminar(xx)
     }
 
-    fun getById(id: Long): XX {
+    fun getById(id: Long): XX? {
         return repository.getById(id)
     }
 }

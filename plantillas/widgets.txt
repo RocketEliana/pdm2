@@ -1,0 +1,144 @@
+________________________SLIDER_________________________
+
+ <com.google.android.material.slider.Slider
+                android:id="@+id/slider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+******************************************************
+binding.slider.valueFrom = 0f
+binding.slider.valueTo = 100f
+
+binding.slider.addOnChangeListener { slider, value, fromUser ->
+  val valor = binding.slider.value
+}
+_____________________SEEKBAR_____________________________
+
+
+    <SeekBar
+        android:id="@+id/seek"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:max="100"
+        android:min="0"
+         />
+*********************************************************
+binding.seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(
+                p0: SeekBar?,
+                p1: Int,
+                p2: Boolean
+            ) {
+                // 1. Convertir el entero p1 (0-100) a un flotante (0.0f-1.0f)
+                val volume = p1 / 100f
+
+                // 2. Aplicar el volumen a ambos canales (izquierdo y derecho) del reproductor
+                media.setVolume(volume, volume)
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+
+            }
+
+        })
+
+
+_____________________RADIOBUTTON_____________________________
+<RadioGroup
+    android:id="@+id/radioGroup"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RadioButton
+        android:id="@+id/radio1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Opción 1" />
+
+    <RadioButton
+        android:id="@+id/radio2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Opción 2" />
+</RadioGroup>
+*********************************************************
+binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+    when (checkedId) {
+        R.id.radio1 -> val valor = "Opción 1"
+        R.id.radio2 -> val valor = "Opción 2"
+    }
+}
+// Leer valor en cualquier momento:
+val seleccionado = binding.radioGroup.checkedRadioButtonId
+
+
+
+_____________________CHECKBOX_____________________________
+<CheckBox
+    android:id="@+id/checkbox"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Acepto términos" />
+*********************************************************
+binding.checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
+    val valor = isChecked // true o false
+}
+// Leer valor en cualquier momento:
+val marcado = binding.checkbox.isChecked
+
+
+
+_____________________SWITCH_____________________________
+<Switch
+    android:id="@+id/switch1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Activar" />
+*********************************************************
+binding.switch1.setOnCheckedChangeListener { buttonView, isChecked ->
+    val valor = isChecked // true o false
+}
+// Leer valor en cualquier momento:
+val activo = binding.switch1.isChecked
+
+
+
+_____________________SPINNER_____________________________
+<Spinner
+    android:id="@+id/spinner"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+*********************************************************
+val opciones = listOf("Opción 1", "Opción 2", "Opción 3")
+val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, opciones)
+adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+binding.spinner.adapter = adapter
+
+binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+    override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+        val valor = opciones[pos]
+    }
+    override fun onNothingSelected(parent: AdapterView<*>) {}
+}
+// Leer valor en cualquier momento:
+val seleccionado = binding.spinner.selectedItem.toString()
+
+
+_____________________LISTVIEW_____________________________
+<ListView
+    android:id="@+id/listView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+*********************************************************
+val datos = listOf("Item 1", "Item 2", "Item 3")
+val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, datos)
+binding.listView.adapter = adapter
+
+binding.listView.setOnItemClickListener { parent, view, position, id ->
+    val valor = datos[position]
+}
+

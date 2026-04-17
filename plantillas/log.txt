@@ -1,0 +1,1 @@
+  Log.d("DEBUG_APP", "Usuario recuperado: ${user?.nombre}") // ¿Sale null aquí?

@@ -1,0 +1,10 @@
+  setSupportActionBar(binding.toolbarPrincipal)
+        val id = intent.getLongExtra("idSeleccionado", -1)
+
+        if (id != -1L) {
+            val user = viewModel.getUserId(id)
+            Log.d("DEBUG_APP", "Usuario recuperado: ${user?.nombre}") // ¿Sale null aquí?
+            user?.let {
+                val nombre = it.nombre
+                supportActionBar?.title = it.nombre<<<<<<<<<<<<<<<<<<<<<<-----------
+                                                   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<--------
