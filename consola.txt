@@ -1,0 +1,10 @@
+conectados:
+
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" devices
+
+errores
+
+ & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" logcat *:E//todo el móvil
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" logcat | Select-String "com.example.pokemongo" //solo app
+
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" logcat AndroidRuntime:E *:S //ver porq explota

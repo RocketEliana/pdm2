@@ -7,6 +7,7 @@ ________________________SLIDER_________________________
 ******************************************************
 binding.slider.valueFrom = 0f
 binding.slider.valueTo = 100f
+binding.slider.stepSize = 1f////obliga a solo enteros
 
 binding.slider.addOnChangeListener { slider, value, fromUser ->
   val valor = binding.slider.value
@@ -141,4 +142,14 @@ binding.listView.adapter = adapter
 binding.listView.setOnItemClickListener { parent, view, position, id ->
     val valor = datos[position]
 }
+______________LISTVIEWSEMARCAAPULSAR______________
+  val tipoList=listOf("agua","fuego","planta")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_activated_1, tipoList)
+        binding.listatipo.adapter = adapter
+        // Importante: Dile al ListView que solo se puede elegir uno a la vez
+        binding.listatipo.choiceMode = ListView.CHOICE_MODE_SINGLE
+        binding.listatipo.setOnItemClickListener { parent, view, position, id ->
+            binding.listatipo.setItemChecked(position, true)
+            tipo= tipoList[position]
+        }
 
