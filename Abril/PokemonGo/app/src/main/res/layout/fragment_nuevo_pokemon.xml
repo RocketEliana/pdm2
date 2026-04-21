@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".NuevoPokemonFragment">
+
+            <TextView
+                android:id="@+id/textView"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nuevo Pokemon" />
+
+            <ImageView
+                android:id="@+id/foto"
+                android:layout_width="123dp"
+                android:layout_height="72dp"
+                android:layout_margin="25dp"
+                android:background="@drawable/image_frame"/>
+
+
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/slider"
+                android:layout_margin="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ListView
+                android:id="@+id/listatipo"
+                android:layout_margin="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+                <Button
+                    android:id="@+id/registro"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="25dp"
+
+                    android:backgroundTint="#304FFE"
+                    app:cornerRadius="5dp"
+                    android:text="REGISTRO"/>
+
+
+
+</LinearLayout>

@@ -1,0 +1,70 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".Principal">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarPrincipal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+   />
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="#FFFFFF"
+        android:padding="0dp">
+
+
+        <Button
+            android:id="@+id/nuevoPokemon"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="#304FFE"
+            android:textSize="10sp"
+            android:text="Nuevo"
+            app:cornerRadius="5dp"
+            />
+
+        <Button
+            android:id="@+id/batallaPokemon"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="#304FFE"
+            android:textSize="10sp"
+            android:text="Batalla"
+            app:cornerRadius="5dp"
+            />
+        <Button
+            android:id="@+id/GimnasionPokemon"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textSize="10sp"
+            android:backgroundTint="#304FFE"
+            android:text="Gimnasio"
+            app:cornerRadius="5dp"
+            />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/indicator"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:background="#FF6B6B"/>
+
+    <FrameLayout
+        android:id="@+id/contenedorPokemon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>
