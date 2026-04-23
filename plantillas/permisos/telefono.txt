@@ -27,3 +27,59 @@ private fun hacerLlamada(telefono: String) {
 
 // En onViewCreated:
 binding.telefonoD.setOnClickListener { comprobarPermisoLlamada() }
+
+
+__________________________________________________________________________
+
+DESDE ADAPTER 
+
+class AdapterListaPrincipal(
+    context: Context,
+    private val lista: List<Sala>,
+    private val onLlamar: (String) -> Unit   // 👈 callback, el Main decide qué hacer
+) : ArrayAdapter<Sala>(context, 0, lista) {
+
+------------>getvIEW
+ telefono.setOnClickListener {
+            onLlamar(sala.telefono)
+        }
+----------->MAIN
+private var telefonoPendiente: String? = null
+
+private val launcherLlamada = registerForActivityResult(
+    ActivityResultContracts.RequestPermission()
+) { concedido ->
+    if (concedido) {
+        telefonoPendiente?.let { llamar(it) }
+    } else {
+        Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+    }
+    telefonoPendiente = null
+}
+
+// Lanza la llamada directamente (permiso ya garantizado)
+private fun llamar(telefono: String) {
+    val intent = Intent(Intent.ACTION_CALL).apply {
+        data = Uri.parse("tel:$telefono")
+    }
+    startActivity(intent)
+}
+
+// Comprueba permiso y llama, o pide permiso guardando el número
+private fun comprobarPermisoYLlamar(telefono: String) {
+    val permiso = Manifest.permission.CALL_PHONE
+    if (ContextCompat.checkSelfPermission(this, permiso) == PackageManager.PERMISSION_GRANTED) {
+        llamar(telefono)
+    } else {
+        telefonoPendiente = telefono   // 👈 lo guardamos para usarlo tras el permiso
+        launcherLlamada.launch(permiso)
+    }
+}
+OBSERVE viewModel.listaSala.observe(this) { lista ->
+    adapter = AdapterListaPrincipal(this, lista) { telefono ->
+        comprobarPermisoYLlamar(telefono)   // 👈 el callback conecta adapter con Main
+    }
+    binding.lista.adapter = adapter
+}
+
+

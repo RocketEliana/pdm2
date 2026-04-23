@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/acercade"
+        android:title="Acerca de..."
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/login"
+        android:title="Login"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/cerrar"
+                android:title="Cerrar sesion"/>
+        </menu>
+
+    </item>
+    <item
+        android:id="@+id/cercade"
+        android:title="cerca..."
+        app:showAsAction="never"/>
+
+</menu>
