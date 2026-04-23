@@ -75,11 +75,13 @@ private fun comprobarPermisoYLlamar(telefono: String) {
         launcherLlamada.launch(permiso)
     }
 }
-OBSERVE viewModel.listaSala.observe(this) { lista ->
-    adapter = AdapterListaPrincipal(this, lista) { telefono ->
-        comprobarPermisoYLlamar(telefono)   // 👈 el callback conecta adapter con Main
-    }
-    binding.lista.adapter = adapter
+ adapter = AdapterOrigen(this, mutableListOf()) { telefono ->
+            comprobarPermisoYLlamar(telefono)
 }
+        binding.listaOrigen.adapter=adapter
+        viewModel.listaInsti.observe(this){lista->adapter.actualizarLista(lista)
+           
+        }
+       
 
 

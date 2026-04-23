@@ -4,6 +4,6 @@
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:backgroundTint="#304FFE"
+            android:backgroundTint="#B2FF59"
             app:cornerRadius="5dp"
             android:text="REGISTRO"/>
