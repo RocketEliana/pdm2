@@ -1,7 +1,0 @@
-import android.util.Log
-if (resultadoId != -1L) {
-    Log.d("DB_CHECK", "¡Éxito! Insertado con ID: $resultadoId")
-    // Aquí podrías, por ejemplo, cerrar la pantalla o mostrar un Toast
-} else {
-    Log.e("DB_CHECK", "Error: No se pudo insertar en la DB.")
-}
