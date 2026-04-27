@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Maps — Marcadores en Kotlin</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e11;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #4ade80;
+    --accent2: #818cf8;
+    --accent3: #fb923c;
+    --text: #e8e8f0;
+    --muted: #7c7c99;
+    --code-bg: #0a0a0d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 3.5rem 2.5rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(74,222,128,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: 80px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(129,140,248,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.25);
+    color: var(--accent);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    padding: 4px 12px; border-radius: 999px;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+  }
+  .tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.8rem;
+  }
+  h1 span { color: var(--accent); }
+  .subtitle {
+    font-size: 15px; color: var(--muted); max-width: 520px; line-height: 1.6;
+  }
+
+  /* NAV TABS */
+  .tabs-wrapper {
+    padding: 0 2.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 0; overflow-x: auto;
+  }
+  .tab {
+    padding: 1rem 1.4rem;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+    cursor: pointer; color: var(--muted);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* CONTENT */
+  .content { padding: 2.5rem; max-width: 900px; }
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.25s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 0.75rem;
+  }
+  .card-title { font-size: 16px; font-weight: 600; }
+  .badge {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    padding: 3px 9px; border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .badge-green { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+  .badge-indigo { background: rgba(129,140,248,0.12); color: #818cf8; border: 1px solid rgba(129,140,248,0.2); }
+  .badge-orange { background: rgba(251,146,60,0.12); color: #fb923c; border: 1px solid rgba(251,146,60,0.2); }
+  .badge-cyan { background: rgba(34,211,238,0.12); color: #22d3ee; border: 1px solid rgba(34,211,238,0.2); }
+
+  .desc { font-size: 13.5px; color: var(--muted); line-height: 1.7; margin-bottom: 1rem; }
+
+  /* CODE */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    position: relative;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #c9d1d9;
+  }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .cmt { color: #4a5568; font-style: italic; }
+  .num { color: #79c0ff; }
+  .cls { color: #ffa657; }
+  .prop { color: #e3b341; }
+
+  .copy-btn {
+    position: absolute; top: 10px; right: 12px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    padding: 4px 12px; border-radius: 6px; cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--muted); }
+  .copy-btn.copied { color: var(--accent); border-color: rgba(74,222,128,0.4); }
+
+  /* PREVIEW */
+  .preview {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12.5px; color: var(--muted);
+  }
+  .pin {
+    width: 14px; height: 18px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    flex-shrink: 0;
+  }
+  .info-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+  }
+  .info-bubble strong { display: block; color: var(--text); font-weight: 600; margin-bottom: 2px; }
+  .info-bubble span { color: var(--muted); font-size: 12px; }
+
+  /* NOTE */
+  .note {
+    background: rgba(129,140,248,0.06);
+    border-left: 3px solid var(--accent2);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 12.5px; color: var(--muted);
+    line-height: 1.6;
+    margin-top: 1rem;
+  }
+  .note strong { color: var(--text); font-weight: 600; }
+
+  /* TWO COL */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* SUMMARY TABLE */
+  .summary-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .summary-table th {
+    text-align: left; padding: 10px 14px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-table td { padding: 12px 14px; border-bottom: 1px solid rgba(42,42,53,0.5); }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .summary-table code { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent2); }
+
+  /* FOOTER */
+  footer {
+    margin-top: 4rem; padding: 2rem 2.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  footer span { color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="tag"><div class="tag-dot"></div>Android · Kotlin · Google Maps SDK</div>
+  <h1>Marcadores<br><span>personalizados</span></h1>
+  <p class="subtitle">Guía completa para añadir iconos, carteles informativos y ventanas emergentes custom en Google Maps.</p>
+</div>
+
+<div class="tabs-wrapper">
+  <div class="tab active" onclick="showTab('icon', this)">Icono</div>
+  <div class="tab" onclick="showTab('snippet', this)">Snippet</div>
+  <div class="tab" onclick="showTab('infowindow', this)">InfoWindow custom</div>
+  <div class="tab" onclick="showTab('tag', this)">Datos extra</div>
+  <div class="tab" onclick="showTab('resumen', this)">Resumen</div>
+</div>
+
+<div class="content">
+
+  <!-- ICONO -->
+  <div id="s-icon" class="section active">
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Icono desde drawable</div>
+          <span class="badge badge-green">drawable</span>
+        </div>
+        <p class="desc">Reemplaza el pin rojo por cualquier imagen en <code style="color:var(--accent2)">res/drawable</code>.</p>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code><span class="kw">val</span> <span class="prop">icono</span> = <span class="cls">BitmapDescriptorFactory</span>
+    .<span class="fn">fromResource</span>(<span class="cls">R</span>.drawable.mi_icono)
+
+mMap.<span class="fn">addMarker</span>(
+    <span class="cls">MarkerOptions</span>()
+        .<span class="fn">position</span>(madrid)
+        .<span class="fn">title</span>(<span class="str">"Madrid"</span>)
+        .<span class="fn">icon</span>(icono)
+)</code></pre>
+        <div class="preview">
+          <div class="pin" style="background:#4ade80;"></div>
+          Pin con imagen personalizada desde drawable
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Cambiar color del pin</div>
+          <span class="badge badge-cyan">color</span>
+        </div>
+        <p class="desc">Misma forma de pin, solo cambia el color usando las constantes <code style="color:var(--accent2)">HUE_*</code>.</p>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code>mMap.<span class="fn">addMarker</span>(
+    <span class="cls">MarkerOptions</span>()
+        .<span class="fn">position</span>(madrid)
+        .<span class="fn">title</span>(<span class="str">"Madrid"</span>)
+        .<span class="fn">icon</span>(
+            <span class="cls">BitmapDescriptorFactory</span>
+                .<span class="fn">defaultMarker</span>(
+                    <span class="cls">BitmapDescriptorFactory</span>
+                        .HUE_BLUE
+                )
+        )
+)</code></pre>
+        <div class="preview">
+          <div class="pin" style="background:#378ADD;"></div>
+          <div class="pin" style="background:#D85A30;"></div>
+          <div class="pin" style="background:#7F77DD;"></div>
+          <div class="pin" style="background:#4ade80;"></div>
+          BLUE · ORANGE · VIOLET · GREEN
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Icono desde Bitmap (escalar imagen)</div>
+        <span class="badge badge-orange">bitmap</span>
+      </div>
+      <p class="desc">Útil para redimensionar el icono antes de aplicarlo al marcador.</p>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code><span class="kw">fun</span> <span class="fn">bitmapFromDrawable</span>(context: <span class="cls">Context</span>, resId: <span class="cls">Int</span>, width: <span class="cls">Int</span>, height: <span class="cls">Int</span>): <span class="cls">BitmapDescriptor</span> {
+    <span class="kw">val</span> <span class="prop">drawable</span> = <span class="cls">ContextCompat</span>.<span class="fn">getDrawable</span>(context, resId)!!
+    <span class="kw">val</span> <span class="prop">bmp</span> = <span class="cls">Bitmap</span>.<span class="fn">createBitmap</span>(width, height, <span class="cls">Bitmap</span>.<span class="cls">Config</span>.ARGB_8888)
+    <span class="kw">val</span> <span class="prop">canvas</span> = <span class="cls">Canvas</span>(bmp)
+    drawable.<span class="fn">setBounds</span>(<span class="num">0</span>, <span class="num">0</span>, width, height)
+    drawable.<span class="fn">draw</span>(canvas)
+    <span class="kw">return</span> <span class="cls">BitmapDescriptorFactory</span>.<span class="fn">fromBitmap</span>(bmp)
+}
+
+<span class="cmt">// Uso:</span>
+<span class="kw">val</span> <span class="prop">icono</span> = <span class="fn">bitmapFromDrawable</span>(requireContext(), R.drawable.mi_icono, <span class="num">80</span>, <span class="num">80</span>)
+mMap.<span class="fn">addMarker</span>(<span class="cls">MarkerOptions</span>().<span class="fn">position</span>(madrid).<span class="fn">icon</span>(icono))</code></pre>
+    </div>
+  </div>
+
+  <!-- SNIPPET -->
+  <div id="s-snippet" class="section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Snippet — subtítulo en la burbuja</div>
+        <span class="badge badge-indigo">snippet</span>
+      </div>
+      <p class="desc">Al tocar el marcador aparece una burbuja nativa con título y subtítulo. Sin código adicional, funciona directo.</p>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code>mMap.<span class="fn">addMarker</span>(
+    <span class="cls">MarkerOptions</span>()
+        .<span class="fn">position</span>(madrid)
+        .<span class="fn">title</span>(<span class="str">"Madrid"</span>)
+        .<span class="fn">snippet</span>(<span class="str">"Capital de España\nPoblación: 3.3M"</span>)
+)</code></pre>
+      <div class="preview">
+        <div class="info-bubble">
+          <strong>Madrid</strong>
+          <span>Capital de España · Población: 3.3M</span>
+        </div>
+        <span>→ Así se ve al tocar el marcador</span>
+      </div>
+      <div class="note">
+        El <strong>snippet</strong> acepta saltos de línea con <code style="color:var(--accent2)">\n</code> pero <strong>no soporta HTML ni estilos</strong>. Para eso, usa InfoWindowAdapter (siguiente tab).
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Escuchar click en la burbuja</div>
+        <span class="badge badge-orange">listener</span>
+      </div>
+      <p class="desc">Detecta cuando el usuario toca la ventana emergente para abrir un detalle, navegar, etc.</p>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code>mMap.<span class="fn">setOnInfoWindowClickListener</span> { marker ->
+    <span class="kw">val</span> <span class="prop">destino</span> = marker.position
+    <span class="cls">Toast</span>.<span class="fn">makeText</span>(
+        requireContext(),
+        <span class="str">"Abriendo: </span>${marker.title}<span class="str">"</span>,
+        <span class="cls">Toast</span>.LENGTH_SHORT
+    ).<span class="fn">show</span>()
+    <span class="cmt">// Aquí puedes navegar, abrir un fragment, etc.</span>
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- INFO WINDOW -->
+  <div id="s-infowindow" class="section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Layout XML del InfoWindow</div>
+        <span class="badge badge-orange">res/layout</span>
+      </div>
+      <p class="desc">Crea el archivo <code style="color:var(--accent2)">res/layout/custom_info_window.xml</code>:</p>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code><span class="kw">&lt;LinearLayout</span> <span class="prop">xmlns:android</span>=<span class="str">"http://schemas.android.com/apk/res/android"</span>
+    <span class="prop">android:layout_width</span>=<span class="str">"wrap_content"</span>
+    <span class="prop">android:layout_height</span>=<span class="str">"wrap_content"</span>
+    <span class="prop">android:orientation</span>=<span class="str">"vertical"</span>
+    <span class="prop">android:background</span>=<span class="str">"@drawable/rounded_bg"</span>
+    <span class="prop">android:padding</span>=<span class="str">"8dp"</span><span class="kw">&gt;</span>
+
+    <span class="kw">&lt;ImageView</span>
+        <span class="prop">android:id</span>=<span class="str">"@+id/infoImagen"</span>
+        <span class="prop">android:layout_width</span>=<span class="str">"150dp"</span>
+        <span class="prop">android:layout_height</span>=<span class="str">"100dp"</span>
+        <span class="prop">android:scaleType</span>=<span class="str">"centerCrop"</span><span class="kw">/&gt;</span>
+
+    <span class="kw">&lt;TextView</span>
+        <span class="prop">android:id</span>=<span class="str">"@+id/infoTitulo"</span>
+        <span class="prop">android:layout_width</span>=<span class="str">"wrap_content"</span>
+        <span class="prop">android:layout_height</span>=<span class="str">"wrap_content"</span>
+        <span class="prop">android:textStyle</span>=<span class="str">"bold"</span><span class="kw">/&gt;</span>
+
+    <span class="kw">&lt;TextView</span>
+        <span class="prop">android:id</span>=<span class="str">"@+id/infoDescripcion"</span>
+        <span class="prop">android:layout_width</span>=<span class="str">"wrap_content"</span>
+        <span class="prop">android:layout_height</span>=<span class="str">"wrap_content"</span><span class="kw">/&gt;</span>
+
+<span class="kw">&lt;/LinearLayout&gt;</span></code></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">InfoWindowAdapter en Kotlin</div>
+        <span class="badge badge-indigo">adapter</span>
+      </div>
+      <p class="desc">Implementa el adaptador en tu <code style="color:var(--accent2)">onMapReady</code>:</p>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code>mMap.<span class="fn">setInfoWindowAdapter</span>(<span class="kw">object</span> : <span class="cls">GoogleMap</span>.<span class="cls">InfoWindowAdapter</span> {
+
+    <span class="kw">override fun</span> <span class="fn">getInfoWindow</span>(marker: <span class="cls">Marker</span>): <span class="cls">View</span>? {
+        <span class="kw">return null</span> <span class="cmt">// null = fondo estándar + nuestro contenido</span>
+    }
+
+    <span class="kw">override fun</span> <span class="fn">getInfoContents</span>(marker: <span class="cls">Marker</span>): <span class="cls">View</span> {
+        <span class="kw">val</span> <span class="prop">view</span> = layoutInflater.<span class="fn">inflate</span>(
+            R.layout.custom_info_window, <span class="kw">null</span>
+        )
+        <span class="kw">val</span> <span class="prop">datos</span> = marker.tag <span class="kw">as</span>? <span class="cls">Map</span>&lt;*, *&gt;
+
+        view.<span class="fn">findViewById</span>&lt;<span class="cls">TextView</span>&gt;(R.id.infoTitulo)
+            .text = marker.title
+        view.<span class="fn">findViewById</span>&lt;<span class="cls">TextView</span>&gt;(R.id.infoDescripcion)
+            .text = datos?.get(<span class="str">"descripcion"</span>) <span class="kw">as</span>? <span class="cls">String</span>
+                    ?: marker.snippet
+
+        <span class="kw">val</span> <span class="prop">imgRes</span> = datos?.get(<span class="str">"imagen"</span>) <span class="kw">as</span>? <span class="cls">Int</span>
+        <span class="kw">if</span> (imgRes != <span class="kw">null</span>) {
+            view.<span class="fn">findViewById</span>&lt;<span class="cls">ImageView</span>&gt;(R.id.infoImagen)
+                .<span class="fn">setImageResource</span>(imgRes)
+        }
+        <span class="kw">return</span> view
+    }
+})</code></pre>
+      <div class="note">
+        <strong>Importante:</strong> Las InfoWindow son <strong>snapshots estáticos</strong>, no vistas vivas. Si cargas imágenes con Glide o Picasso, debes llamar <code style="color:var(--accent2)">marker.showInfoWindow()</code> cuando la imagen termine de cargar para refrescar el snapshot.
+      </div>
+    </div>
+  </div>
+
+  <!-- TAG -->
+  <div id="s-tag" class="section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Adjuntar datos al marcador</div>
+        <span class="badge badge-green">tag</span>
+      </div>
+      <p class="desc">El campo <code style="color:var(--accent2)">tag</code> permite guardar cualquier objeto en el marcador sin variables globales.</p>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code><span class="kw">val</span> <span class="prop">marker</span> = mMap.<span class="fn">addMarker</span>(
+    <span class="cls">MarkerOptions</span>()
+        .<span class="fn">position</span>(madrid)
+        .<span class="fn">title</span>(<span class="str">"Madrid"</span>)
+)
+
+marker?.tag = <span class="fn">mapOf</span>(
+    <span class="str">"imagen"</span>      <span class="kw">to</span> R.drawable.madrid_foto,
+    <span class="str">"descripcion"</span> <span class="kw">to</span> <span class="str">"Ciudad fundada en el siglo IX"</span>,
+    <span class="str">"poblacion"</span>   <span class="kw">to</span> <span class="num">3_300_000</span>,
+    <span class="str">"url"</span>         <span class="kw">to</span> <span class="str">"https://madrid.es"</span>
+)</code></pre>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Leer al hacer click</div>
+          <span class="badge badge-cyan">onClick</span>
+        </div>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code>mMap.<span class="fn">setOnMarkerClickListener</span> { marker ->
+    <span class="kw">val</span> <span class="prop">datos</span> = marker.tag
+        <span class="kw">as</span>? <span class="cls">Map</span>&lt;*, *&gt;
+    <span class="kw">val</span> <span class="prop">desc</span> = datos
+        ?.get(<span class="str">"descripcion"</span>)
+        <span class="kw">as</span>? <span class="cls">String</span>
+
+    <span class="cls">Toast</span>.<span class="fn">makeText</span>(
+        requireContext(),
+        desc,
+        <span class="cls">Toast</span>.LENGTH_SHORT
+    ).<span class="fn">show</span>()
+
+    <span class="kw">false</span> <span class="cmt">// false = comportamiento normal</span>
+}</code></pre>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Data class (mejor práctica)</div>
+          <span class="badge badge-indigo">data class</span>
+        </div>
+        <p class="desc">En vez de un <code style="color:var(--accent2)">Map</code>, usa una data class tipada:</p>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copiar</button><code><span class="kw">data class</span> <span class="cls">LugarInfo</span>(
+    <span class="kw">val</span> <span class="prop">descripcion</span>: <span class="cls">String</span>,
+    <span class="kw">val</span> <span class="prop">imagen</span>: <span class="cls">Int</span>,
+    <span class="kw">val</span> <span class="prop">url</span>: <span class="cls">String</span>
+)
+
+marker?.tag = <span class="cls">LugarInfo</span>(
+    descripcion = <span class="str">"Fundada siglo IX"</span>,
+    imagen = R.drawable.foto,
+    url = <span class="str">"https://madrid.es"</span>
+)
+
+<span class="cmt">// Lectura limpia y con tipos:</span>
+<span class="kw">val</span> <span class="prop">info</span> = marker.tag <span class="kw">as</span>? <span class="cls">LugarInfo</span></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+  <div id="s-resumen" class="section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Tabla de referencia rápida</div>
+      </div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Método</th>
+            <th>Para qué sirve</th>
+            <th>Complejidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>.icon()</code></td>
+            <td>Cambiar la imagen/color del pin</td>
+            <td><span class="badge badge-green">baja</span></td>
+          </tr>
+          <tr>
+            <td><code>.title()</code></td>
+            <td>Título en la burbuja al tocar</td>
+            <td><span class="badge badge-green">baja</span></td>
+          </tr>
+          <tr>
+            <td><code>.snippet()</code></td>
+            <td>Subtítulo simple bajo el título</td>
+            <td><span class="badge badge-green">baja</span></td>
+          </tr>
+          <tr>
+            <td><code>marker.tag</code></td>
+            <td>Guardar datos extra en el marcador</td>
+            <td><span class="badge badge-cyan">media</span></td>
+          </tr>
+          <tr>
+            <td><code>setInfoWindowAdapter</code></td>
+            <td>Burbuja completamente personalizada con imagen</td>
+            <td><span class="badge badge-orange">alta</span></td>
+          </tr>
+          <tr>
+            <td><code>setOnInfoWindowClickListener</code></td>
+            <td>Acción al tocar la burbuja emergente</td>
+            <td><span class="badge badge-cyan">media</span></td>
+          </tr>
+          <tr>
+            <td><code>setOnMarkerClickListener</code></td>
+            <td>Acción al tocar el pin directamente</td>
+            <td><span class="badge badge-cyan">media</span></td>
+          </tr>
+          <tr>
+            <td><code>marker.showInfoWindow()</code></td>
+            <td>Forzar refresco del InfoWindow (p.ej. tras cargar imagen)</td>
+            <td><span class="badge badge-cyan">media</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <strong>Recuerda:</strong> Los <code style="color:var(--accent2)">InfoWindow</code> son <strong>snapshots</strong> — una vez renderizados no se actualizan solos. Si cargas imágenes asíncronas (Glide, Picasso, Coil), llama <code style="color:var(--accent2)">marker.showInfoWindow()</code> en el callback de la imagen para forzar el redibujado.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>Google Maps SDK for Android &mdash; Kotlin</div>
+  <div>TheBug · <span>2026</span></div>
+</footer>
+
+<script>
+  function showTab(id, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('s-' + id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function copyCode(btn) {
+    const pre = btn.parentElement;
+    const code = pre.querySelector('code').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'copiado';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>

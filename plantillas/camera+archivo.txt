@@ -75,3 +75,132 @@ class NuevoPokemonFragment : Fragment() {
     }
 }
 //<uses-permission android:name="android.permission.CAMERA" />
+******************************************
+*********************************************
+*******************************************************
+CON GALERIA class NuevoPokemonFragment : Fragment() {
+
+    private var bitmapFoto: Bitmap? = null
+    private var uri: Uri? = null
+    private var rutaImagen: String? = null
+
+    // =========================
+    // 📷 CÁMARA (la tuya intacta)
+    // =========================
+    private val launcherTomarFoto = registerForActivityResult(
+        ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            binding.foto.setImageBitmap(bitmap)
+            bitmapFoto = bitmap
+
+            val uriGuardada = guardarFotoEnGaleria(bitmap)
+            if (uriGuardada != null) {
+                uri = uriGuardada
+                rutaImagen = uriGuardada.toString()
+
+                Toast.makeText(
+                    requireContext(),
+                    "Foto guardada en: $rutaImagen",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    // =========================
+    // 🖼️ GALERÍA (NUEVO)
+    // =========================
+    private val launcherGaleria = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uriResult ->
+        if (uriResult != null) {
+            uri = uriResult
+            rutaImagen = uriResult.toString()
+
+            binding.foto.setImageURI(uriResult)
+
+            Toast.makeText(
+                requireContext(),
+                "Imagen seleccionada de galería",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    // =========================
+    // 🔐 PERMISO CÁMARA (el tuyo)
+    // =========================
+    private val launcherPermisoCamara = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        if (concedido) launcherTomarFoto.launch(null)
+        else Toast.makeText(requireContext(), "Permiso necesario", Toast.LENGTH_SHORT).show()
+    }
+
+    // =========================
+    // 🧠 CLICK: elegir opción
+    // =========================
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.foto.setOnClickListener {
+            mostrarOpcionesImagen()
+        }
+    }
+
+    private fun mostrarOpcionesImagen() {
+        val opciones = arrayOf("Hacer foto", "Elegir de galería")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Selecciona imagen")
+            .setItems(opciones) { _, which ->
+                when (which) {
+                    0 -> launcherPermisoCamara.launch(Manifest.permission.CAMERA)
+                    1 -> launcherGaleria.launch("image/*")
+                }
+            }
+            .show()
+    }
+
+    // =========================
+    // 💾 TU FUNCIÓN (INTACTA)
+    // =========================
+    private fun guardarFotoEnGaleria(bitmap: Bitmap): Uri? {
+        val fileName = "pokemon_${System.currentTimeMillis()}.jpg"
+        val resolver = requireContext().contentResolver
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MisEspectaculos")
+            }
+        }
+
+        val imageUri = resolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        )
+
+        imageUri?.let { uri ->
+            try {
+                resolver.openOutputStream(uri).use { outputStream ->
+                    if (outputStream != null) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                        return uri
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        return null
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
