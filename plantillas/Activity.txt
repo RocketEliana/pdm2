@@ -18,3 +18,8 @@ class MainActivity : AppCompatActivity() {
   
     }
 }
+*******************************************
+   private  lateinit var preferencias: SharedPreferences 
+   private val viewModel: AppViewModel by viewModels ()
+**************
+ preferencias=getSharedPreferences(PREFERENCES,Context.MODE_PRIVATE)

@@ -1,0 +1,146 @@
+cambio tema en toolbar
+
+package com.example.vallaevent
+
+import android.content.Context
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.vallaevent.databinding.ActivityMainBinding
+
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private  lateinit var preferencias: SharedPreferences
+    companion object{
+        const val PREFERENCES="preferencias"
+        const val TEMA="tema"
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        preferencias=getSharedPreferences(PREFERENCES,Context.MODE_PRIVATE)
+        val tema=preferencias.getString(TEMA,"system")//por defecto el de sistema ojo :  val mode = when (which) { 0 -> "light"; 1 -> "dark"; else -> "system" }
+        applyTheme(tema!!)
+
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_item, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.modoApp -> {
+                AlertDialog.Builder(this)
+                    .setTitle("Tema")
+                    .setItems(arrayOf("Claro", "Oscuro", "Sistema")) { _, which ->
+                        val mode = when (which) { 0 -> "light"; 1 -> "dark"; else -> "system" }
+                        applyTheme(mode)
+                    }
+                    .show()
+                true
+            }
+
+            R.id.acercade -> {
+                Toast.makeText(this, "TheBug,2026", Toast.LENGTH_LONG).show()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)//"Que se encargue Android"
+        }
+    }
+    fun applyTheme(mode: String) {
+        val nightMode = when (mode) {
+            "light"  -> AppCompatDelegate.MODE_NIGHT_NO
+            "dark"   -> AppCompatDelegate.MODE_NIGHT_YES
+            else     -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        AppCompatDelegate.setDefaultNightMode(nightMode)
+        // Guardar para la próxima vez que abra la app
+     preferencias
+            .edit().putString(TEMA, mode).apply()
+    }
+}
+****************************************
+****************************************
+COLORS
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <!-- Primarios naranja/coral -->
+    <color name="orange_primary">#FF5722</color>
+    <color name="orange_dark">#E64A19</color>
+    <color name="orange_light">#FF8A65</color>
+    <color name="orange_container">#FFE0D0</color>
+
+    <!-- Secundario (acento contrastado) -->
+    <color name="teal_secondary">#00BCD4</color>
+    <color name="teal_container">#B2EBF2</color>
+
+    <!-- Superficies modo claro -->
+    <color name="white">#FFFFFF</color>
+    <color name="surface_light">#FFF8F6</color>
+    <color name="background_light">#FFF3EE</color>
+    <color name="on_surface_light">#1A1A1A</color>
+    <color name="on_surface_variant_light">#5C4033</color>
+
+    <!-- Superficies modo oscuro -->
+    <color name="surface_dark">#1C1210</color>
+    <color name="background_dark">#111111</color>
+    <color name="surface_variant_dark">#2C1F1A</color>
+    <color name="on_surface_dark">#F5E6E0</color>
+    <color name="on_surface_variant_dark">#FFCCBC</color>
+
+    <!-- Error -->
+    <color name="error">#FF1744</color>
+    <color name="error_container">#FFD7DB</color>
+
+</resources>
+*************************************
+*************************************
+TEMA NORMAL
+<resources>
+    <style name="Base.Theme.VallaEvent" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF5722</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#FFE0D0</item>
+        <item name="colorOnPrimaryContainer">#8B2500</item>
+        <item name="colorSecondary">#00BCD4</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="android:colorBackground">#FFF3EE</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#1A1A1A</item>
+    </style>
+
+    <style name="Theme.VallaEvent" parent="Base.Theme.VallaEvent" />
+</resources>
+************************************
+NIGHT
+<resources>
+    <style name="Base.Theme.VallaEvent" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF8A65</item>
+        <item name="colorOnPrimary">#1C1210</item>
+        <item name="colorPrimaryContainer">#E64A19</item>
+        <item name="colorOnPrimaryContainer">#FFE0D0</item>
+        <item name="colorSecondary">#00BCD4</item>
+        <item name="colorOnSecondary">#001F24</item>
+        <item name="android:colorBackground">#111111</item>
+        <item name="colorSurface">#1C1210</item>
+        <item name="colorOnSurface">#F5E6E0</item>
+    </style>
+
+    <style name="Theme.VallaEvent" parent="Base.Theme.VallaEvent" />
+</resources>

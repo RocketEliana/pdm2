@@ -17,3 +17,8 @@ class FragmentA : Fragment() {
     }
 
 }
+**************************
+    private val viewModel: AppViewModel by activityViewModels ()
+    private lateinit var preferencias: SharedPreferences
+************************
+  preferencias=requireContext().getSharedPreferences(MainActivity.PREFERENCES, Context.MODE_PRIVATE)

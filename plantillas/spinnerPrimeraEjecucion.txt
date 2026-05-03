@@ -1,0 +1,82 @@
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var preferencias: SharedPreferences
+    private val viewModel: AppViewModel by viewModels()
+    private lateinit var adapter: AdapterOrigenSpinner
+
+    private var primeraSeleccion = true//BANDERA PARA OBVIAR PRIMERA EJECUCION
+
+    companion object {
+        const val PREFERENCIAS = "preferences"
+        const val ID_FAVORITO = "id_favorito"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        preferencias = getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE)
+
+        val idSeleccion = preferencias.getLong(ID_FAVORITO, -1L)
+
+
+        if (idSeleccion == -1L) {
+            binding.imagenInicio.setImageResource(R.drawable.defecto)
+        }
+
+        adapter = AdapterOrigenSpinner(this, mutableListOf())
+        binding.spinner.adapter = adapter
+
+
+        viewModel.listaBiblioteca.observe(this) { lista ->
+            adapter.actualizarLista(lista)
+
+            if (idSeleccion != -1L) {
+                val posicion = lista.indexOfFirst { it.id == idSeleccion }
+  //"búscame en la lista el evento cuyo id coincide con el que yo tenía guardado"
+                //Si lo encuentra → te da su posición (0, 1, 2…)
+                //Si no → devuelve -1
+                if (posicion != -1) {
+                    binding.spinner.setSelection(posicion)
+                    binding.imagenInicio.setImageResource(lista[posicion].imagen)
+                }
+            }
+        }
+
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (primeraSeleccion) {
+                    primeraSeleccion = false
+                    return
+                }
+
+                val biblioteca = adapter.getItem(position)
+                biblioteca?.let {
+                    binding.imagenInicio.setImageResource(it.imagen)
+                    preferencias.edit().putLong(ID_FAVORITO, it.id).apply()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+
+        binding.imagenInicio.setOnClickListener {
+            val idActual = preferencias.getLong(ID_FAVORITO, -1L)
+            val intent = Intent(this, MainActivity2::class.java)
+            intent.putExtra("idSeleccionado", idActual)
+
+            if (idActual != -1L) {
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Seleccione un origen", Toast.LENGTH_LONG).show()
+            }
+        }
