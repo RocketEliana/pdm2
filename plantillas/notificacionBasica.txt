@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // 🔹 Mostrar notificación
-    private fun mostrarNotificacion() {
+    fun mostrarNotificacion() {
         val builder = NotificationCompat.Builder(this, CANAL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Título")

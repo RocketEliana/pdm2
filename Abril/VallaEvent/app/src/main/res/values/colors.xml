@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <!-- Primarios naranja/coral -->
+    <color name="orange_primary">#FF5722</color>
+    <color name="orange_dark">#E64A19</color>
+    <color name="orange_light">#FF8A65</color>
+    <color name="orange_container">#FFE0D0</color>
+
+    <!-- Secundario (acento contrastado) -->
+    <color name="teal_secondary">#00BCD4</color>
+    <color name="teal_container">#B2EBF2</color>
+
+    <!-- Superficies modo claro -->
+    <color name="white">#FFFFFF</color>
+    <color name="surface_light">#FFF8F6</color>
+    <color name="background_light">#FFF3EE</color>
+    <color name="on_surface_light">#1A1A1A</color>
+    <color name="on_surface_variant_light">#5C4033</color>
+
+    <!-- Superficies modo oscuro -->
+    <color name="surface_dark">#1C1210</color>
+    <color name="background_dark">#111111</color>
+    <color name="surface_variant_dark">#2C1F1A</color>
+    <color name="on_surface_dark">#F5E6E0</color>
+    <color name="on_surface_variant_dark">#FFCCBC</color>
+
+    <!-- Error -->
+    <color name="error">#FF1744</color>
+    <color name="error_container">#FFD7DB</color>
+
+</resources>

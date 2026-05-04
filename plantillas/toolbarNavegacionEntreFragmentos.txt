@@ -1,0 +1,17 @@
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarDetalle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title="Detalle del Evento" />
+********************************
+******************************
+en ir--<     parentFragmentManager.beginTransaction().replace(R.id.contenedorPincipal,
+                    DetalleFragment()).addToBackStack(null).commit()
+en volver-->   // Buscamos la toolbar por su ID y le decimos qué hacer al pulsar la flecha
+        binding.toolbarDetalle.setNavigationOnClickListener {
+            // Esto cierra el fragmento actual y vuelve al anterior
+            parentFragmentManager.popBackStack()
+        }

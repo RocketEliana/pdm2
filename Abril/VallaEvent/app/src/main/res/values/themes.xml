@@ -1,0 +1,15 @@
+<resources>
+    <style name="Base.Theme.VallaEvent" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF5722</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#FFE0D0</item>
+        <item name="colorOnPrimaryContainer">#8B2500</item>
+        <item name="colorSecondary">#00BCD4</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="android:colorBackground">#FFF3EE</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#1A1A1A</item>
+    </style>
+
+    <style name="Theme.VallaEvent" parent="Base.Theme.VallaEvent" />
+</resources>

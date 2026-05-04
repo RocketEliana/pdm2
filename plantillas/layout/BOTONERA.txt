@@ -1,0 +1,32 @@
+BOTONERA
+implementation("com.google.android.flexbox:flexbox:3.0.0")
+
+<com.google.android.flexbox.FlexboxLayout
+    android:id="@+id/flexboxLetras"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:flexWrap="wrap"
+    app:justifyContent="flex_start"
+    android:layout_marginBottom="8dp"/>
+
+val letras = ('A'..'Z').toMutableList().apply { add(19, 'Ñ') }
+
+val flexbox = findViewById<FlexboxLayout>(R.id.flexboxLetras)
+
+for (letra in letras) {
+    val btn = Button(this).apply {
+        text = letra.toString()
+        textSize = 12f
+        setPadding(4, 4, 4, 4)
+        layoutParams = FlexboxLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { setMargins(4, 4, 4, 4) }
+
+        setOnClickListener {
+            val etNombre = findViewById<EditText>(R.id.etNombre)
+            etNombre.append(letra.toString())
+        }
+    }
+    flexbox.addView(btn)
+}

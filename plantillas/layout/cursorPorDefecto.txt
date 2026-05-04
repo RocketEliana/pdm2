@@ -1,0 +1,2 @@
+ android:focusableInTouchMode="true"
+    android:focusedByDefault="true"

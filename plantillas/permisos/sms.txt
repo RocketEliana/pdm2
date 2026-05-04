@@ -1,0 +1,74 @@
+<uses-permission android:name="android.permission.SEND_SMS"/>
+*********************************
+********************************
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.telephony.SmsManager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var etNumero: EditText
+    private lateinit var etMensaje: EditText
+
+    // Lanzador para solicitar permiso en tiempo de ejecución
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                enviarSms()
+            } else {
+                Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        etNumero = findViewById(R.id.etNumero)
+        etMensaje = findViewById(R.id.etMensaje)
+
+        findViewById<Button>(R.id.btnEnviar).setOnClickListener {
+            comprobarPermiso()
+        }
+    }
+
+    private fun comprobarPermiso() {
+        when {
+            ContextCompat.checkSelfPermission(
+                this, Manifest.permission.SEND_SMS
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // Permiso ya concedido
+                enviarSms()
+            }
+            else -> {
+                // Solicitar permiso
+                requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+            }
+        }
+    }
+
+    private fun enviarSms() {
+        val numero = etNumero.text.toString().trim()
+        val mensaje = etMensaje.text.toString().trim()
+
+        if (numero.isEmpty() || mensaje.isEmpty()) {
+            Toast.makeText(this, "Rellena todos los campos", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
+            val smsManager = SmsManager.getDefault()
+            smsManager.sendTextMessage(numero, null, mensaje, null, null)
+            Toast.makeText(this, "SMS enviado correctamente ✓", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error al enviar: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+}

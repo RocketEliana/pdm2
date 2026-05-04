@@ -1,0 +1,131 @@
+RECIBIR ALARMA
+
+class AlarmReceiver : BroadcastReceiver() {
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        // Recuperamos el nombre del evento que pasamos al programar la alarma
+        val nombre = intent?.getStringExtra("nombre") ?: "Evento"
+
+        val manager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Al pulsar la notificación, abre tu MainActivity
+        val intentApertura = Intent(context, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intentApertura, PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificacion = NotificationCompat.Builder(context!!, "mi_canal")
+            .setContentTitle("¡Tienes un evento hoy!")
+            .setContentText(nombre)
+            .setSmallIcon(R.drawable.dep)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        manager.notify(101, notificacion)
+    }
+}***************************
+***************************
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>***************
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>*************
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.VallaEvent">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDplpYHieBgMW_GxF_DXcx8R8_aSB7X5Dw" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- NUEVO: declara el receiver para que Android sepa que existe -->
+        <receiver android:name=".AlarmReceiver" android:exported="false"/>**************************
+    </application>
+
+</manifest>
+EN EL MAIN EL CANAL*********************  private val CANAL_ID = "mi_canal"
+crearCanal()
+    private fun crearCanal() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val canal = NotificationChannel(
+                CANAL_ID,
+                "Canal básico",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(canal)
+        }
+    }
+***************************
+***************************
+en el fragmento nuevo
+    val id = viewModel.insertaEvento(evemto)
+               // copy() crea una copia del objeto evemto cambiando solo el id,
+// ya que Room asigna el id real al insertar pero no actualiza el objeto original
+programarAlarma(evemto.copy(id = id))
+*************************************
+   private fun programarAlarma(evento: Evento) {
+
+        Toast.makeText(requireContext(), "Entrando en programarAlarma", Toast.LENGTH_SHORT).show()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Toast.makeText(requireContext(), "SIN PERMISO de alarma exacta", Toast.LENGTH_LONG).show()
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Permiso necesario")
+                    .setMessage("Para programar alarmas la app necesita un permiso especial.")
+                    .setPositiveButton("Aceptar") { _, _ ->
+                        startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+                return
+            }
+        }
+
+        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        val fecha = sdf.parse(evento.fecha) ?: run {
+            Toast.makeText(requireContext(), "ERROR: fecha no parseable: ${evento.fecha}", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        if (fecha.time <= System.currentTimeMillis()) {
+            Toast.makeText(requireContext(), "ERROR: fecha ya pasada", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        Toast.makeText(requireContext(), "Alarma programada para ${evento.fecha}", Toast.LENGTH_LONG).show()
+
+        val intent = Intent(requireContext(), AlarmReceiver::class.java).apply {
+            putExtra("nombre", evento.nombre)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(),
+            evento.id.toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, fecha.time, pendingIntent)
+    }
