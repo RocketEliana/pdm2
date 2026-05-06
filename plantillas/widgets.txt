@@ -115,7 +115,7 @@ _____________________SPINNER_____________________________
     android:layout_height="wrap_content" />
 *********************************************************
 val opciones = listOf("Opción 1", "Opción 2", "Opción 3")
-val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, opciones)
+val adapter = ArrayAdapter(this,   android.R.layout.simple_spinner_item, opciones)
 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 binding.spinner.adapter = adapter
 

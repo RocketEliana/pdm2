@@ -1,0 +1,49 @@
+package view
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.TextView
+import com.example.trailtracker.R
+import model.Senda
+
+class AdapterLista(
+    context: Context,
+    private val lista: MutableList<Senda>,
+    private val onLlamar: (String) -> Unit
+) :
+    ArrayAdapter<Senda>(context, 0, lista) {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+
+        val itemView = convertView
+            ?: LayoutInflater.from(context).inflate(R.layout.item_lista, parent, false)
+
+        val senda = getItem(position)
+
+        val nombre = itemView.findViewById<TextView>(R.id.nombre)
+        val telefono = itemView.findViewById<TextView>(R.id.telefono)
+
+        val imagen = itemView.findViewById<ImageView>(R.id.imgItem)
+        senda?.let {
+            nombre.text = it.nombre
+            telefono.text=it.tefono
+
+            imagen.setImageResource(it.foto)
+
+        }
+        telefono.setOnClickListener { onLlamar(telefono.text.toString()) }
+
+
+        return itemView
+    }
+
+    fun actualizarLista(nuevaLista: List<Senda>) {
+        lista.clear()
+        lista.addAll(nuevaLista)
+        notifyDataSetChanged()
+    }
+}

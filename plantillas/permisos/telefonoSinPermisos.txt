@@ -1,0 +1,81 @@
+package view
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.TextView
+import com.example.trailtracker.R
+import model.Senda
+
+class AdapterLista(
+    context: Context,
+    private val lista: MutableList<Senda>,
+    private val onLlamar: (String) -> Unit
+) :
+    ArrayAdapter<Senda>(context, 0, lista) {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+
+        val itemView = convertView
+            ?: LayoutInflater.from(context).inflate(R.layout.item_lista, parent, false)
+
+        val senda = getItem(position)
+
+        val nombre = itemView.findViewById<TextView>(R.id.nombre)
+        val telefono = itemView.findViewById<TextView>(R.id.telefono)
+
+        val imagen = itemView.findViewById<ImageView>(R.id.imgItem)
+        senda?.let {
+            nombre.text = it.nombre
+            telefono.text=it.tefono
+
+            imagen.setImageResource(it.foto)
+
+        }
+        telefono.setOnClickListener { onLlamar(telefono.text.toString()) }
+
+
+        return itemView
+    }
+
+    fun actualizarLista(nuevaLista: List<Senda>) {
+        lista.clear()
+        lista.addAll(nuevaLista)
+        notifyDataSetChanged()
+    }
+}
+
+class MainActivity : AppCompatActivity() {
+    private  lateinit var preferencias: SharedPreferences
+    private val viewModel: AppViewModel by viewModels ()
+    private lateinit var adapter: AdapterLista
+    companion object{
+        const val PREFERENCES="preferencias"
+        const val ID_SELECCION="id_SEleccionado"
+        const val INICIADO="iniciado"
+        
+    }
+    private lateinit var binding: ActivityMainBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        preferencias=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+       adapter= AdapterLista(this,mutableListOf()) { telefono ->
+           val intent = Intent(Intent.ACTION_DIAL).apply {
+               data = Uri.parse("tel:$telefono")
+           }
+           startActivity(intent)
+       }
+        binding.lista.adapter=adapter;
+        viewModel.listaSenda.observe(this){
+            lista->
+            adapter.actualizarLista(lista)
+        }
+
+    }
+}

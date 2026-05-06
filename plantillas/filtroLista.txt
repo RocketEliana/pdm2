@@ -1,0 +1,55 @@
+package com.example.vallaevent
+
+import android.R
+import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.vallaevent.databinding.ActivityMain2Binding
+import viewModel.AdapterList
+import viewModel.AppViewModel
+
+class MainActivity2 : AppCompatActivity() {
+    private lateinit var binding: ActivityMain2Binding
+    private val viewModel: AppViewModel by viewModels()
+    private lateinit var adapterL: AdapterList
+    private var valor: String = ""
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivityMain2Binding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val opciones = listOf("Musica", "Teatro", "Deporte")
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, opciones)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerFiltro.adapter = adapter
+        adapterL = AdapterList(this, mutableListOf())
+        binding.listafiltrada
+            .adapter = adapterL
+
+        binding.spinnerFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                valor= opciones[pos]
+
+                viewModel.listaEvento.observe(this@MainActivity2) { lista ->
+                    var listaF = lista.filter {
+                        it.tipo == valor
+                    }
+                    adapterL.actualizarLista(listaF)
+
+
+                }
+
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+
+    }
+}

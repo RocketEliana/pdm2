@@ -1,0 +1,52 @@
+// Senda solo guarda su propia info
+@Entity(tableName = "Senda")
+data class Senda(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val nombre: String,
+    val tefono: String,
+    val foto: Int
+)
+
+// Actividad tiene la foreign key de Senda
+@Entity(tableName = "Actividad")
+data class Actividad(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val sendaId: Long,   // ← clave foránea
+    val tipo: String,
+    val latA: Double,
+    val longA: Double
+)
+
+// Clase auxiliar para obtenerlas juntas
+data class SendaConActividades(
+    @Embedded val senda: Senda,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "sendaId"
+    )
+    val actividades: List<Actividad>
+)
+************************************
+// Primero insertas la senda y obtienes su id
+val idSenda1 = viewModel.insertaSenda(
+    Senda(nombre = "Cañón del Río Lobos", tefono = "975363564", foto = R.drawable.foto_canon)
+)
+
+// Luego insertas las actividades con ese id
+viewModel.insertaActividad(Actividad(sendaId = idSenda1, tipo = "senderismo", latA = 41.72182, longA = -3.04736))
+viewModel.insertaActividad(Actividad(sendaId = idSenda1, tipo = "escalada",   latA = 41.75177, longA = -3.06830))
+viewModel.insertaActividad(Actividad(sendaId = idSenda1, tipo = "montaña",    latA = 41.79478, longA = -3.10672))
+
+val idSenda2 = viewModel.insertaSenda(
+    Senda(nombre = "Senda del Oso", tefono = "985764623", foto = R.drawable.foto_senda_oso)
+)
+viewModel.insertaActividad(Actividad(sendaId = idSenda2, tipo = "senderismo", latA = 43.17001, longA = -6.09739))
+viewModel.insertaActividad(Actividad(sendaId = idSenda2, tipo = "escalada",   latA = 43.25672, longA = -6.00541))
+viewModel.insertaActividad(Actividad(sendaId = idSenda2, tipo = "montaña",    latA = 43.23058, longA = -6.03592))
+
+val idSenda3 = viewModel.insertaSenda(
+    Senda(nombre = "Monte Valonsadero", tefono = "975000000", foto = R.drawable.foto_valonsadero)
+)
+viewModel.insertaActividad(Actividad(sendaId = idSenda3, tipo = "senderismo", latA = 41.80983, longA = -2.54514))
+viewModel.insertaActividad(Actividad(sendaId = idSenda3, tipo = "escalada",   latA = 41.80500, longA = -2.53500))
+viewModel.insertaActividad(Actividad(sendaId = idSenda3, tipo = "montaña",    latA = 41.81241, longA = -2.52611))

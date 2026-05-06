@@ -58,3 +58,25 @@ val fechaSeleccionada = String.format("%02d/%02d/%d %02d:%02d", dia, mes + 1, a�
 
 // Así debe quedar ✅
 val fechaSeleccionada = String.format("%d/%02d/%02d %02d:%02d", año, mes + 1, dia, hora, min)
+************************
+
+
+
+
+
+solo hora
+
+ private fun mostrarHora(callback: (String) -> Unit) {
+    val calendario = Calendar.getInstance()
+
+    TimePickerDialog(
+        this,
+        { _, hora, min ->
+            val horaSeleccionada = String.format("%02d:%02d", hora, min)
+            callback(horaSeleccionada)
+        },
+        calendario.get(Calendar.HOUR_OF_DAY),
+        calendario.get(Calendar.MINUTE),
+        true
+    ).show()
+}

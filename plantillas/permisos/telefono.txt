@@ -82,6 +82,17 @@ private fun comprobarPermisoYLlamar(telefono: String) {
         viewModel.listaInsti.observe(this){lista->adapter.actualizarLista(lista)
            
         }
+***********************
+*************************
+OJOJOJOJOJOJOJ CON ACTION_DIAL NO HACE FALTA PERMISOS,NO LLAMA DIRECTO PERO MUCHO MAS SIMPLE 
+adapter = AdapterOrigen(this, mutableListOf()) { telefono ->
+    val intent = Intent(Intent.ACTION_DIAL).apply {
+        data = Uri.parse("tel:$telefono")
+    }
+    startActivity(intent)
+}
+*********
+telefono.setOnClickListener { insti?.let { onLlamar(it.telefono) } }EL ADAPTER IGUAL PERO EN LA ACTIVITY TE AHORRAS LA VIDA
        
 
 
