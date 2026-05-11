@@ -1,52 +1,222 @@
-// Senda solo guarda su propia info
-@Entity(tableName = "Senda")
-data class Senda(
+
+1. Plato.kt
+kotlin@Entity(tableName = "Plato")
+data class Plato(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val nombre: String,
-    val tefono: String,
-    val foto: Int
+    val precio: Double = 0.0,
+    val descripcion: String = ""
 )
 
-// Actividad tiene la foreign key de Senda
-@Entity(tableName = "Actividad")
-data class Actividad(
+2. Restaurante.kt
+kotlin@Entity(tableName = "Restaurante")
+data class Restaurante(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val sendaId: Long,   // ← clave foránea
-    val tipo: String,
-    val latA: Double,
-    val longA: Double
+    val nombre: String,
+    val telefono: String,
+    val foto: Int,
+    val latitud: Double,
+    val longitud: Double
 )
 
-// Clase auxiliar para obtenerlas juntas
-data class SendaConActividades(
-    @Embedded val senda: Senda,
+3. RestaurantePlato.kt
+kotlin@Entity(
+    tableName = "RestaurantePlato",
+    primaryKeys = ["restauranteId", "platoId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = Restaurante::class,
+            parentColumns = ["id"],
+            childColumns = ["restauranteId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Plato::class,
+            parentColumns = ["id"],
+            childColumns = ["platoId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("platoId")]
+)
+data class RestaurantePlato(
+    val restauranteId: Long,
+    val platoId: Long
+)
+
+4. RestauranteConPlatos.kt
+kotlindata class RestauranteConPlatos(
+    @Embedded val restaurante: Restaurante,
     @Relation(
         parentColumn = "id",
-        entityColumn = "sendaId"
+        entityColumn = "id",
+        associateBy = Junction(
+            value = RestaurantePlato::class,
+            parentColumn = "restauranteId",
+            entityColumn = "platoId"
+        )
     )
-    val actividades: List<Actividad>
-)
-************************************
-// Primero insertas la senda y obtienes su id
-val idSenda1 = viewModel.insertaSenda(
-    Senda(nombre = "Cañón del Río Lobos", tefono = "975363564", foto = R.drawable.foto_canon)
+    val platos: List<Plato>
 )
 
-// Luego insertas las actividades con ese id
-viewModel.insertaActividad(Actividad(sendaId = idSenda1, tipo = "senderismo", latA = 41.72182, longA = -3.04736))
-viewModel.insertaActividad(Actividad(sendaId = idSenda1, tipo = "escalada",   latA = 41.75177, longA = -3.06830))
-viewModel.insertaActividad(Actividad(sendaId = idSenda1, tipo = "montaña",    latA = 41.79478, longA = -3.10672))
+5. DAOs
+RestauranteDao.kt
+kotlin@Dao
+interface RestauranteDao {
 
-val idSenda2 = viewModel.insertaSenda(
-    Senda(nombre = "Senda del Oso", tefono = "985764623", foto = R.drawable.foto_senda_oso)
-)
-viewModel.insertaActividad(Actividad(sendaId = idSenda2, tipo = "senderismo", latA = 43.17001, longA = -6.09739))
-viewModel.insertaActividad(Actividad(sendaId = idSenda2, tipo = "escalada",   latA = 43.25672, longA = -6.00541))
-viewModel.insertaActividad(Actividad(sendaId = idSenda2, tipo = "montaña",    latA = 43.23058, longA = -6.03592))
+    @Insert
+    fun insertar(r: Restaurante): Long
 
-val idSenda3 = viewModel.insertaSenda(
-    Senda(nombre = "Monte Valonsadero", tefono = "975000000", foto = R.drawable.foto_valonsadero)
+    @Update
+    fun actualizar(r: Restaurante)
+
+    @Delete
+    fun eliminar(r: Restaurante)
+
+    @Query("SELECT * FROM Restaurante")
+    fun getAll(): LiveData<List<Restaurante>>
+
+    @Query("SELECT * FROM Restaurante WHERE id = :id")
+    fun getById(id: Long): Restaurante?
+
+    @Transaction
+    @Query("SELECT * FROM Restaurante")
+    fun getAllConPlatos(): LiveData<List<RestauranteConPlatos>>
+
+    @Transaction
+    @Query("SELECT * FROM Restaurante WHERE id = :id")
+    fun getConPlatosById(id: Long): RestauranteConPlatos?
+}
+PlatoDao.kt
+kotlin@Dao
+interface PlatoDao {
+
+    @Insert
+    fun insertar(plato: Plato): Long
+
+    @Update
+    fun actualizar(plato: Plato)
+
+    @Delete
+    fun eliminar(plato: Plato)
+
+    @Query("SELECT * FROM Plato")
+    fun getAll(): LiveData<List<Plato>>
+
+    @Query("SELECT * FROM Plato WHERE id = :id")
+    fun getById(id: Long): Plato?
+}
+RestaurantePlatoDao.kt
+kotlin@Dao
+interface RestaurantePlatoDao {
+
+    @Insert
+    fun insertar(rel: RestaurantePlato)
+
+    @Delete
+    fun eliminar(rel: RestaurantePlato)
+
+    @Query("DELETE FROM RestaurantePlato WHERE restauranteId = :restauranteId")
+    fun eliminarPlatosDeRestaurante(restauranteId: Long)
+}
+
+6. AppDataBase.kt
+kotlin@Database(
+    entities = [Restaurante::class, Plato::class, RestaurantePlato::class],
+    version = 1,
+    exportSchema = false
 )
-viewModel.insertaActividad(Actividad(sendaId = idSenda3, tipo = "senderismo", latA = 41.80983, longA = -2.54514))
-viewModel.insertaActividad(Actividad(sendaId = idSenda3, tipo = "escalada",   latA = 41.80500, longA = -2.53500))
-viewModel.insertaActividad(Actividad(sendaId = idSenda3, tipo = "montaña",    latA = 41.81241, longA = -2.52611))
+abstract class AppDataBase : RoomDatabase() {
+
+    abstract fun restauranteDao(): RestauranteDao
+    abstract fun platoDao(): PlatoDao
+    abstract fun restaurantePlatoDao(): RestaurantePlatoDao
+
+    companion object {
+        @Volatile private var INSTANCE: AppDataBase? = null
+
+        fun getDatabase(context: Context): AppDataBase {
+            return INSTANCE ?: synchronized(this) {
+                Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDataBase::class.java,
+                    "restaurante_db"
+                )
+                .allowMainThreadQueries()
+                .build()
+                .also { INSTANCE = it }
+            }
+        }
+    }
+}
+
+7. RestauranteRepository.kt
+kotlinclass RestauranteRepository(
+    private val restauranteDao: RestauranteDao,
+    private val platoDao: PlatoDao,
+    private val relDao: RestaurantePlatoDao
+) {
+    fun insertarRestaurante(r: Restaurante): Long = restauranteDao.insertar(r)
+    fun insertarPlato(p: Plato): Long = platoDao.insertar(p)
+
+    fun asociarPlato(restauranteId: Long, platoId: Long) {
+        relDao.insertar(RestaurantePlato(restauranteId, platoId))
+    }
+
+    fun eliminarRestaurante(r: Restaurante) = restauranteDao.eliminar(r)
+    fun eliminarPlato(p: Plato) = platoDao.eliminar(p)
+
+    fun listaTodo(): LiveData<List<Restaurante>> = restauranteDao.getAll()
+    fun listaTodoConPlatos(): LiveData<List<RestauranteConPlatos>> = restauranteDao.getAllConPlatos()
+    fun getRestauranteConPlatos(id: Long): RestauranteConPlatos? = restauranteDao.getConPlatosById(id)
+}
+
+8. RestauranteViewModel.kt
+kotlinclass RestauranteViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository: RestauranteRepository
+    val listaConPlatos: LiveData<List<RestauranteConPlatos>>
+
+    init {
+        val db = AppDataBase.getDatabase(application)
+        repository = RestauranteRepository(
+            db.restauranteDao(),
+            db.platoDao(),
+            db.restaurantePlatoDao()
+        )
+        listaConPlatos = repository.listaTodoConPlatos()
+    }
+
+    fun insertarRestaurante(r: Restaurante): Long = repository.insertarRestaurante(r)
+    fun insertarPlato(p: Plato): Long = repository.insertarPlato(p)
+    fun asociarPlato(restauranteId: Long, platoId: Long) = repository.asociarPlato(restauranteId, platoId)
+    fun eliminarRestaurante(r: Restaurante) = repository.eliminarRestaurante(r)
+    fun getConPlatos(id: Long) = repository.getRestauranteConPlatos(id)
+}
+
+9. Uso en Activity/Fragment
+kotlin// Insertar restaurante con 3 platos
+val rId = viewModel.insertarRestaurante(
+    Restaurante(
+        nombre = "La Tasca",
+        telefono = "987000000",
+        foto = R.drawable.tasca,
+        latitud = 42.0,
+        longitud = -5.0
+    )
+)
+
+val p1Id = viewModel.insertarPlato(Plato(nombre = "Cocido maragato"))
+val p2Id = viewModel.insertarPlato(Plato(nombre = "Botillo"))
+val p3Id = viewModel.insertarPlato(Plato(nombre = "Cecina"))
+
+viewModel.asociarPlato(rId, p1Id)
+viewModel.asociarPlato(rId, p2Id)
+viewModel.asociarPlato(rId, p3Id)
+
+// Observar restaurantes con sus platos
+viewModel.listaConPlatos.observe(viewLifecycleOwner) { lista ->
+    lista.forEach { rcp ->
+        Log.d("TAG", "${rcp.restaurante.nombre}: ${rcp.platos.map { it.nombre }}")
+    }
+}

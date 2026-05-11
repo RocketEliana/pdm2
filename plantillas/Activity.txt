@@ -10,6 +10,12 @@ import com.example.romper.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
  private  lateinit var preferencias: SharedPreferences 
+ companion object {
+        const val PREFERENCES = "preferences"
+        const val ID_S = "idSeleccionado"
+        const val PRIMERAEJECUCION = "primera_ejecucion"
+    }
+
    private val viewModel: AppViewModel by viewModels ()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

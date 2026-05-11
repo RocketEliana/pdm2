@@ -137,7 +137,7 @@ _____________________LISTVIEW_____________________________
     android:layout_height="match_parent" />
 *********************************************************
 val datos = listOf("Item 1", "Item 2", "Item 3")
-val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, datos)
+val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, datos)////OJO CON EL ANDROID.POR QUE SI NO DA HISTORIAS CON LOS IMPORTS!!!!
 binding.listView.adapter = adapter
 
 binding.listView.setOnItemClickListener { parent, view, position, id ->

@@ -1,0 +1,23 @@
+val geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+val direccion = "Calle Mayor 15, León, España"
+
+val resultados = geocoder.getFromLocationName(direccion, 1)
+
+if (!resultados.isNullOrEmpty()) {
+
+    val latitud = resultados[0].latitude
+    val longitud = resultados[0].longitude
+
+    val ubicacion = LatLng(latitud, longitud)
+
+    googleMap.addMarker(
+        MarkerOptions()
+            .position(ubicacion)
+            .title("Dirección")
+    )
+
+    googleMap.moveCamera(
+        CameraUpdateFactory.newLatLngZoom(ubicacion, 16f)
+    )
+}
