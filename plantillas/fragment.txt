@@ -1,6 +1,8 @@
 class FragmentA : Fragment() {
     private var _binding: FragmentABinding? = null
     private val binding get() = _binding!!
+ private val viewModel: AppViewModel by activityViewModels ()
+    private lateinit var preferencias: SharedPreferences
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -9,6 +11,7 @@ class FragmentA : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+ preferencias=requireContext().getSharedPreferences(MainActivity.PREFERENCES, Context.MODE_PRIVATE)
 
     }
     override fun onDestroyView() {
@@ -18,7 +21,6 @@ class FragmentA : Fragment() {
 
 }
 **************************
-    private val viewModel: AppViewModel by activityViewModels ()
-    private lateinit var preferencias: SharedPreferences
+   
 ************************
-  preferencias=requireContext().getSharedPreferences(MainActivity.PREFERENCES, Context.MODE_PRIVATE)
+ 

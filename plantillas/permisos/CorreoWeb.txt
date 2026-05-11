@@ -1,0 +1,26 @@
+web.setOnClickListener {
+    val uri = Uri.parse("https://www.ejemplo.com")
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    val chooser = Intent.createChooser(intent, "Abrir con...")
+    context.startActivity(chooser)
+}
+
+
+***************
+
+***************
+  correo.setOnClickListener { val intent= Intent(Intent.ACTION_SENDTO,uriCorreo)
+                                    val chooser=Intent.createChooser(intent,"Mandar con...")
+                                     context.startActivity(chooser)
+                                    }
+**********************************
+    binding.web.setOnClickListener {
+            var url = binding.web.text.toString().trim()
+            if (url.isNotEmpty()) {
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    url = "http://$url"
+                }
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(intent)
+            }
+        }

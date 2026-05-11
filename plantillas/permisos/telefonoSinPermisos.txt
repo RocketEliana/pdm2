@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         preferencias=getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
        adapter= AdapterLista(this,mutableListOf()) { telefono ->
            val intent = Intent(Intent.ACTION_DIAL).apply {
-               data = Uri.parse("tel:$telefono")
+               data = Uri.parse("tel:$telefono")//ojo con esto,no quitar el tel,saca variable con binding
            }
            startActivity(intent)
        }
