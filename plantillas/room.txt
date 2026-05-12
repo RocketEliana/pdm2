@@ -84,6 +84,7 @@ class Repository(private val dao: XXDao) {
 Expone LiveData a la UI. Delega todas las operaciones en Repository.
 
 class XXViewModel(application: Application) : AndroidViewModel(application) {
+//uso viewmodel para dar solución al problema de los ciclos de vida y rotaciones, independientemente de si usas corrutinas o hilos tradicionales
 
     private val repository: Repository
     val listaXX: LiveData<List<XX>>
