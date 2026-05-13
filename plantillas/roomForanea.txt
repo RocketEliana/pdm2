@@ -1,6 +1,7 @@
 
 1. Plato.kt
-kotlin@Entity(tableName = "Plato")
+
+@Entity(tableName = "Plato")
 data class Plato(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val nombre: String,
@@ -9,7 +10,8 @@ data class Plato(
 )
 
 2. Restaurante.kt
-kotlin@Entity(tableName = "Restaurante")
+
+@Entity(tableName = "Restaurante")
 data class Restaurante(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val nombre: String,
@@ -20,7 +22,8 @@ data class Restaurante(
 )
 
 3. RestaurantePlato.kt
-kotlin@Entity(
+
+@Entity(
     tableName = "RestaurantePlato",
     primaryKeys = ["restauranteId", "platoId"],
     foreignKeys = [
@@ -30,6 +33,7 @@ kotlin@Entity(
             childColumns = ["restauranteId"],
             onDelete = ForeignKey.CASCADE
         ),
+
         ForeignKey(
             entity = Plato::class,
             parentColumns = ["id"],
@@ -39,13 +43,14 @@ kotlin@Entity(
     ],
     indices = [Index("platoId")]
 )
+
 data class RestaurantePlato(
     val restauranteId: Long,
     val platoId: Long
 )
 
 4. RestauranteConPlatos.kt
-kotlindata class RestauranteConPlatos(
+data class RestauranteConPlatos(
     @Embedded val restaurante: Restaurante,
     @Relation(
         parentColumn = "id",
@@ -61,7 +66,7 @@ kotlindata class RestauranteConPlatos(
 
 5. DAOs
 RestauranteDao.kt
-kotlin@Dao
+@Dao
 interface RestauranteDao {
 
     @Insert
@@ -88,7 +93,7 @@ interface RestauranteDao {
     fun getConPlatosById(id: Long): RestauranteConPlatos?
 }
 PlatoDao.kt
-kotlin@Dao
+@Dao
 interface PlatoDao {
 
     @Insert
@@ -107,7 +112,8 @@ interface PlatoDao {
     fun getById(id: Long): Plato?
 }
 RestaurantePlatoDao.kt
-kotlin@Dao
+
+@Dao
 interface RestaurantePlatoDao {
 
     @Insert
@@ -121,7 +127,8 @@ interface RestaurantePlatoDao {
 }
 
 6. AppDataBase.kt
-kotlin@Database(
+
+@Database(
     entities = [Restaurante::class, Plato::class, RestaurantePlato::class],
     version = 1,
     exportSchema = false
@@ -151,7 +158,8 @@ abstract class AppDataBase : RoomDatabase() {
 }
 
 7. RestauranteRepository.kt
-kotlinclass RestauranteRepository(
+
+class RestauranteRepository(
     private val restauranteDao: RestauranteDao,
     private val platoDao: PlatoDao,
     private val relDao: RestaurantePlatoDao
@@ -172,7 +180,8 @@ kotlinclass RestauranteRepository(
 }
 
 8. RestauranteViewModel.kt
-kotlinclass RestauranteViewModel(application: Application) : AndroidViewModel(application) {
+
+class RestauranteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: RestauranteRepository
     val listaConPlatos: LiveData<List<RestauranteConPlatos>>
