@@ -331,3 +331,92 @@ class PokemonViewModel(
             .listaPokemonUsuario(usuarioId)
     }
 }
+*************************************************
+***************************************************
+class MainActivity : AppCompatActivity() {
+
+    private val viewModel: PokemonViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // =========================
+        // INSERTAR USUARIO
+        // =========================
+        val idUsuario = viewModel.insertarUsuario(
+            Usuario(
+                nombre = "Ash",
+                password = "1234"
+            )
+        )
+
+        // =========================
+        // INSERTAR POKEMON
+        // =========================
+        val idPokemon = viewModel.insertarPokemon(
+            Pokemon(
+                nombre = "Pikachu",
+                tipo = "Electrico",
+                nivel = 25,
+                usuarioId = idUsuario
+            )
+        )
+
+        viewModel.insertarPokemon(
+            Pokemon(
+                nombre = "Charizard",
+                tipo = "Fuego",
+                nivel = 36,
+                usuarioId = idUsuario
+            )
+        )
+
+        viewModel.insertarPokemon(
+            Pokemon(
+                nombre = "Bulbasaur",
+                tipo = "Planta",
+                nivel = 15,
+                usuarioId = idUsuario
+            )
+        )
+
+        // =========================
+        // LISTA DE USUARIOS
+        // =========================
+        viewModel.listaUsuarios.observe(this) { listaUsuarios ->
+            listaUsuarios.forEach {
+                println("Usuario: ${it.nombre}")
+            }
+        }
+
+        // =========================
+        // USUARIO + POKEMON (RELACION 1:N)
+        // =========================
+        viewModel.getUsuarioConPokemon(idUsuario).observe(this) { data ->
+
+            val usuario = data.usuario
+            val pokemons = data.pokemon
+
+            println("===== USUARIO =====")
+            println(usuario.nombre)
+            println(usuario.password)
+
+            println("===== POKEMON =====")
+            pokemons.forEach { poke ->
+                println("${poke.nombre} - ${poke.tipo} - lvl ${poke.nivel}")
+            }
+        }
+
+        // =========================
+        // LISTA POKEMON DE UN USUARIO
+        // =========================
+        viewModel.listaPokemonUsuario(idUsuario).observe(this) { listaPokemon ->
+
+            println("===== POKEMON SOLO DEL USUARIO =====")
+
+            listaPokemon.forEach { poke ->
+                println(poke.nombre)
+            }
+        }
+    }
+}

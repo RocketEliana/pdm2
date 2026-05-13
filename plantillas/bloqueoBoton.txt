@@ -1,0 +1,81 @@
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+class LoginActivity : AppCompatActivity() {
+
+    private var intentosFallidos = 0
+    private val maxIntentos = 3
+    private var bloqueado = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+        val btnLogin = findViewById<Button>(R.id.btnLogin)
+        val etUser = findViewById<EditText>(R.id.etUser)
+        val etPass = findViewById<EditText>(R.id.etPass)
+
+        btnLogin.setOnClickListener {
+
+            // Si está bloqueado, no hace nada
+            if (bloqueado) return@setOnClickListener
+
+            val usuario = etUser.text.toString()
+            val password = etPass.text.toString()
+
+            // Simulación de validación
+            val loginCorrecto = validarLogin(usuario, password)
+
+            if (loginCorrecto) {
+
+                intentosFallidos = 0 // reinicia intentos
+
+                Toast.makeText(
+                    this,
+                    "Login correcto",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                intentosFallidos++
+
+                Toast.makeText(
+                    this,
+                    "Usuario o contraseña incorrectos",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Si falla 3 veces
+                if (intentosFallidos >= maxIntentos) {
+
+                    bloquearBoton(btnLogin)
+                }
+            }
+        }
+    }
+
+    private fun validarLogin(user: String, pass: String): Boolean {
+
+        return user == "admin" && pass == "1234"
+    }
+
+    private fun bloquearBoton(btn: Button) {
+
+        bloqueado = true
+        btn.isEnabled = false
+        btn.text = "Bloqueado 10s"
+
+        lifecycleScope.launch {
+
+            delay(10_000) // 10 segundos
+
+            btn.isEnabled = true
+            btn.text = "Iniciar sesión"
+
+            intentosFallidos = 0
+            bloqueado = false
+        }
+    }
+}
