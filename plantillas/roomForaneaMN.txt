@@ -21,6 +21,27 @@ data class Restaurante(
     val longitud: Double
 )
 
+data class RestaurantePlato(
+    val restauranteId: Long,
+    val platoId: Long
+)
+
+4. RestauranteConPlatos.kt
+data class RestauranteConPlatos(
+    @Embedded val restaurante: Restaurante,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            value = RestaurantePlato::class,
+            parentColumn = "restauranteId",
+            entityColumn = "platoId"
+        )
+    )
+    val platos: List<Plato>
+)
+
+
 3. RestaurantePlato.kt
 
 @Entity(
@@ -44,25 +65,9 @@ data class Restaurante(
     indices = [Index("platoId")]
 )
 
-data class RestaurantePlato(
-    val restauranteId: Long,
-    val platoId: Long
-)
 
-4. RestauranteConPlatos.kt
-data class RestauranteConPlatos(
-    @Embedded val restaurante: Restaurante,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(
-            value = RestaurantePlato::class,
-            parentColumn = "restauranteId",
-            entityColumn = "platoId"
-        )
-    )
-    val platos: List<Plato>
-)
+
+
 
 5. DAOs
 RestauranteDao.kt

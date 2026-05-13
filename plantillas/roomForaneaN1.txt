@@ -1,0 +1,333 @@
+1️⃣ Modelo Usuario (Usuario.kt)
+package model
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "Usuario")
+data class Usuario(
+
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+
+    val nombre: String,
+    val password: String
+)
+2️⃣ Modelo Pokemon (Pokemon.kt)
+
+Aquí está la foreign key 1:N.
+
+package model
+
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+
+@Entity(
+    tableName = "Pokemon",
+
+    foreignKeys = [
+        ForeignKey(
+            entity = Usuario::class,
+            parentColumns = ["id"],
+            childColumns = ["usuarioId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+
+    indices = [Index("usuarioId")]
+)
+data class Pokemon(
+
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+
+    val nombre: String,
+    val tipo: String,
+    val nivel: Int,
+
+    // Foreign Key
+    val usuarioId: Long
+)
+3️⃣ Clase Relación 1:N (UsuarioConPokemon.kt)
+
+No es tabla.
+
+Solo sirve para el @Relation.
+
+package model
+
+import androidx.room.Embedded
+import androidx.room.Relation
+
+data class UsuarioConPokemon(
+
+    @Embedded
+    val usuario: Usuario,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "usuarioId"
+    )
+    val pokemon: List<Pokemon>
+)
+4️⃣ UsuarioDao.kt
+package dao
+
+import androidx.lifecycle.LiveData
+import androidx.room.*
+import model.Usuario
+import model.UsuarioConPokemon
+
+@Dao
+interface UsuarioDao {
+
+    @Insert
+    fun insertar(usuario: Usuario): Long
+
+    @Update
+    fun actualizar(usuario: Usuario)
+
+    @Delete
+    fun eliminar(usuario: Usuario)
+
+    @Query("SELECT * FROM Usuario")
+    fun getAll(): LiveData<List<Usuario>>
+
+    @Query("SELECT * FROM Usuario WHERE id = :id")
+    fun getById(id: Long): Usuario?
+
+    // RELACIÓN 1:N
+    @Transaction
+    @Query("SELECT * FROM Usuario WHERE id = :id")
+    fun getUsuarioConPokemon(
+        id: Long
+    ): LiveData<UsuarioConPokemon>
+}
+5️⃣ PokemonDao.kt
+
+Tu CRUD normal.
+
+package dao
+
+import androidx.lifecycle.LiveData
+import androidx.room.*
+import model.Pokemon
+
+@Dao
+interface PokemonDao {
+
+    @Insert
+    fun insertar(pokemon: Pokemon): Long
+
+    @Update
+    fun actualizar(pokemon: Pokemon)
+
+    @Delete
+    fun eliminar(pokemon: Pokemon)
+
+    @Query("SELECT * FROM Pokemon")
+    fun getAll(): LiveData<List<Pokemon>>
+
+    @Query("SELECT * FROM Pokemon WHERE id = :id")
+    fun getById(id: Long): Pokemon?
+
+    // Pokemon de un usuario
+    @Query("""
+        SELECT * FROM Pokemon
+        WHERE usuarioId = :usuarioId
+    """)
+    fun getPokemonUsuario(
+        usuarioId: Long
+    ): LiveData<List<Pokemon>>
+}
+6️⃣ AppDataBase.kt
+package database
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import dao.PokemonDao
+import dao.UsuarioDao
+import model.Pokemon
+import model.Usuario
+
+@Database(
+    entities = [
+        Usuario::class,
+        Pokemon::class
+    ],
+    version = 1,
+    exportSchema = false
+)
+
+abstract class AppDataBase : RoomDatabase() {
+
+    abstract fun usuarioDao(): UsuarioDao
+    abstract fun pokemonDao(): PokemonDao
+
+    companion object {
+
+        @Volatile
+        private var INSTANCE: AppDataBase? = null
+
+        fun getDatabase(
+            context: Context
+        ): AppDataBase {
+
+            return INSTANCE ?: synchronized(this) {
+
+                val instance =
+                    Room.databaseBuilder(
+                        context.applicationContext,
+                        AppDataBase::class.java,
+                        "pokemon_db"
+                    )
+                        .allowMainThreadQueries()
+                        .build()
+
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
+7️⃣ Repository.kt
+
+Igual que tu plantilla.
+
+package repository
+
+import androidx.lifecycle.LiveData
+import dao.PokemonDao
+import dao.UsuarioDao
+import model.Pokemon
+import model.Usuario
+import model.UsuarioConPokemon
+
+class Repository(
+
+    private val usuarioDao: UsuarioDao,
+    private val pokemonDao: PokemonDao
+
+) {
+
+    // USUARIO
+
+    fun insertarUsuario(
+        usuario: Usuario
+    ): Long {
+
+        return usuarioDao.insertar(usuario)
+    }
+
+    fun listaUsuarios():
+            LiveData<List<Usuario>> {
+
+        return usuarioDao.getAll()
+    }
+
+    fun getUsuarioById(
+        id: Long
+    ): Usuario? {
+
+        return usuarioDao.getById(id)
+    }
+
+    fun getUsuarioConPokemon(
+        id: Long
+    ): LiveData<UsuarioConPokemon> {
+
+        return usuarioDao
+            .getUsuarioConPokemon(id)
+    }
+
+    // POKEMON
+
+    fun insertarPokemon(
+        pokemon: Pokemon
+    ): Long {
+
+        return pokemonDao.insertar(pokemon)
+    }
+
+    fun listaPokemonUsuario(
+        usuarioId: Long
+    ): LiveData<List<Pokemon>> {
+
+        return pokemonDao
+            .getPokemonUsuario(usuarioId)
+    }
+}
+8️⃣ PokemonViewModel.kt
+package viewmodel
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import database.AppDataBase
+import model.Pokemon
+import model.Usuario
+import model.UsuarioConPokemon
+import repository.Repository
+
+class PokemonViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val repository:
+            Repository
+
+    val listaUsuarios:
+            LiveData<List<Usuario>>
+
+    init {
+
+        val db =
+            AppDataBase
+                .getDatabase(application)
+
+        repository =
+            Repository(
+                db.usuarioDao(),
+                db.pokemonDao()
+            )
+
+        listaUsuarios =
+            repository.listaUsuarios()
+    }
+
+    fun insertarUsuario(
+        usuario: Usuario
+    ): Long {
+
+        return repository
+            .insertarUsuario(usuario)
+    }
+
+    fun insertarPokemon(
+        pokemon: Pokemon
+    ): Long {
+
+        return repository
+            .insertarPokemon(pokemon)
+    }
+
+    fun getUsuarioConPokemon(
+        id: Long
+    ): LiveData<UsuarioConPokemon> {
+
+        return repository
+            .getUsuarioConPokemon(id)
+    }
+
+    fun listaPokemonUsuario(
+        usuarioId: Long
+    ): LiveData<List<Pokemon>> {
+
+        return repository
+            .listaPokemonUsuario(usuarioId)
+    }
+}
