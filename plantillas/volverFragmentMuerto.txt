@@ -1,0 +1,11 @@
+   binding.volver.setOnClickListener {
+
+                preferncias.edit()
+                    .remove(MainActivity.ID_S)
+                    .apply()
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.contenedor, ListaFragment())
+                    .commit()
+
+        }
