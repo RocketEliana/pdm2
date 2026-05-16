@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:paddingTop="30dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NuevoFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            >
+
+
+            <ImageView
+                android:id="@+id/imagen"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/marco"
+                />
+
+            <EditText
+                android:id="@+id/nombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Nombre"
+                android:inputType="text"
+                android:minHeight="50dp" />
+
+            <EditText
+                android:id="@+id/direccion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Direccion"
+                android:inputType="text"
+                android:minHeight="50dp" />
+
+            <EditText
+                android:id="@+id/web"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Web"
+                android:inputType="text"
+                android:minHeight="50dp" />
+
+            <EditText
+                android:id="@+id/telefono"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Telefono"
+                android:inputType="text"
+                android:minHeight="50dp" />
+
+            <TextView
+                android:id="@+id/descripcion"
+                android:layout_width="293dp"
+                android:layout_height="124dp"
+                android:gravity="center_vertical">
+
+            </TextView>
+
+
+            <Spinner
+                android:id="@+id/spinnertipoLugar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </Spinner>
+
+            <RatingBar
+                android:id="@+id/calificacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="false"
+                />
+            <EditText
+                android:id="@+id/longitud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Longitud"
+                android:inputType="text"
+                android:minHeight="50dp" />
+            <EditText
+                android:id="@+id/latitud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Latitud"
+                android:inputType="text"
+                android:minHeight="50dp" />
+            <Button
+                android:id="@+id/fechaHora"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:backgroundTint="#304FFE"
+                app:cornerRadius="5dp"
+                android:text="Fecha y hora"/>
+            <EditText
+                android:id="@+id/fechaelegida"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="fecha"
+                android:inputType="text"
+                android:minHeight="50dp" />
+            <Button
+                android:id="@+id/registro"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:backgroundTint="#304FFE"
+                app:cornerRadius="5dp"
+                android:text="REGISTRO"/>
+
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

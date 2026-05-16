@@ -1,0 +1,9 @@
+
+        mMap = googleMap
+        val contexto = context ?: return //contexto seguro para que no haga crash en el update
+
+        preferencias =
+            contexto.getSharedPreferences(MainActivity.PREFERENCES, Context.MODE_PRIVATE)
+      //  preferencias =
+
+        //    requireContext().getSharedPreferences(MainActivity.PREFERENCES, Context.MODE_PRIVATE)
