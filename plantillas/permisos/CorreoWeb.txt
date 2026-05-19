@@ -9,6 +9,7 @@ web.setOnClickListener {
 ***************
 
 ***************
+ val uriCorreo = Uri.parse("mailto:${correo.text}")
   correo.setOnClickListener { val intent= Intent(Intent.ACTION_SENDTO,uriCorreo)
                                     val chooser=Intent.createChooser(intent,"Mandar con...")
                                      context.startActivity(chooser)

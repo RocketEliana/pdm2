@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:paddingTop="50dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="300dp"
+    tools:context=".MainActivity">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:title="Mi Log"/>
+
+
+    <ListView
+        android:id="@+id/listaOrigen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </ListView>
+
+    <ImageView
+        android:id="@+id/imgItem"
+        android:layout_width="200dp"
+        android:layout_margin="100dp"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/marco"
+        />
+
+</LinearLayout>

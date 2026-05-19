@@ -60,45 +60,106 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         // Buscamos el fragmento de mapa dentro de nuestro fragmento
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
     }
 
-  override fun onMapReady(googleMap: GoogleMap) {
+    override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-         idDestino = arguments?.getLong("idD") ?: -1L
-         idOrigen = arguments?.getLong("idO") ?: -1L
-        if (idDestino != -1L && idOrigen != -1L) {
-            val destino = viewModel.instiPorId(idDestino)
-            val latDestino = destino?.latitud ?: 0.0
-            val lonDestino = destino?.longitud ?: 0.0
-            val origen = viewModel.instiPorId(idOrigen)
-            val latOrigen = origen?.latitud ?: 0.0
-            val lonOrigen = origen?.longitud ?: 0.0
-            val origenLatLon = LatLng(latOrigen, lonOrigen)
-            val destinoLatLon = LatLng(latDestino, lonDestino)
-            mMap.addMarker(
-                MarkerOptions().position(origenLatLon).icon(
+
+         val zorrilla= LatLng(41.6447,-4.76001)
+        val bernabeu= LatLng(40.4531,-3.68939)
+        fun bitmapFromDrawable(context: Context, resId: Int, width: Int, height: Int): BitmapDescriptor {
+            val drawable = ContextCompat.getDrawable(context, resId)!!
+            val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bmp)
+            drawable.setBounds(0, 0, width, height)
+            drawable.draw(canvas)
+            return BitmapDescriptorFactory.fromBitmap(bmp)
+        }
+
+// Uso:
+        val icono = bitmapFromDrawable(requireContext(), R.drawable.pok, 80, 80)
+
+
+        mMap.addMarker(
+            MarkerOptions()
+                .position(zorrilla)
+                .title("Zorrilla")
+                .icon(icono)
+        )
+         /*   mMap.addMarker(
+
+                MarkerOptions().position(zorrilla).icon(
                     BitmapDescriptorFactory.defaultMarker(
                         BitmapDescriptorFactory.HUE_AZURE
                     )
                 )
-            )
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(origenLatLon, 10f))
+            )*/
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(zorrilla, 10f))
             mMap.uiSettings.isZoomControlsEnabled = true
             // Habilita los gestos de zoom (incluyendo la rueda del ratón en el emulador)
             mMap.uiSettings.isZoomGesturesEnabled = true
             mMap.addMarker(
-                MarkerOptions().position(destinoLatLon).icon(
+                MarkerOptions().position(bernabeu).icon(
                     BitmapDescriptorFactory.defaultMarker(
                         BitmapDescriptorFactory.HUE_GREEN
                     )
                 )
             )
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinoLatLon, 10f))
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bernabeu, 10f))
+        }
+    }*********************************
+*********************************
+feo y desesperado
+override fun onMapReady(googleMap: GoogleMap) {
+    mMap = googleMap
+
+    val idDestino = arguments?.getLong("idDestino") ?: -1L
+    val idOrigen = arguments?.getLong("idOrigen") ?: -1L
+
+    if (idDestino != -1L && idOrigen != -1L) {
+        val destino = viewModel.getBibId(idDestino)
+        val origen = viewModel.getBibId(idOrigen)
+
+        val latDestino = destino?.latitud ?: 0.0
+        val lonDestino = destino?.longitud ?: 0.0
+        val latOrigen = origen?.latitud ?: 0.0
+        val lonOrigen = origen?.longitud ?: 0.0
+
+        val origenLatLon = LatLng(latOrigen, lonOrigen)
+        val destinoLatLon = LatLng(latDestino, lonDestino)
+
+        mMap.addMarker(
+            MarkerOptions()
+                .position(origenLatLon)
+                .title("Origen")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+        )
+
+        mMap.addMarker(
+            MarkerOptions()
+                .position(destinoLatLon)
+                .title("Destino")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        )
+
+        mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.uiSettings.isZoomGesturesEnabled = true
+
+        mMap.setOnMapLoadedCallback {
+            val bounds = LatLngBounds.Builder()
+                .include(origenLatLon)
+                .include(destinoLatLon)
+                .build()
+
+            mMap.animateCamera(
+                CameraUpdateFactory.newLatLngBounds(bounds, 200),
+                1000,
+                null
+            )
         }
     }
-}
 }
