@@ -1,0 +1,349 @@
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+
+@Entity(tableName = "User")
+data class User(
+
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+
+    val nombre: String,
+    val password: String
+)
+*****************
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+
+@Entity(
+    tableName = "Monstruo",
+
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["id"],
+            childColumns = ["userId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+
+    indices = [Index("userId")]
+)
+data class Monstruo(
+
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val foto: String,
+    val nombre: String,
+    val tipo: String,
+    val nivel: Int,
+
+    // Foreign Key
+    val userId: Long
+)
+*************************************
+
+import androidx.room.Embedded
+import androidx.room.Relation
+
+data class UserMonstruo(
+    @Embedded
+    val usuario: User,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "userId"
+    )
+    val monstruo: List<Monstruo>
+
+
+)
+******************************************
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Transaction
+import model.User
+import model.UserMonstruo
+
+@Dao
+interface UserDao {
+
+    @Insert
+    fun insertar(user: User): Long
+
+    @Query("SELECT * FROM User")
+    fun getAll(): LiveData<List<User>>
+
+    @Query("SELECT * FROM User WHERE id = :id")
+    fun getById(id: Long): User?
+    @Query("SELECT id From User where nombre = :nombreP and password = :passwordD")
+    fun comprobarUser(nombreP:String,passwordD:String):Long?
+
+    // RELACIÓN 1:N
+    @Transaction
+    @Query("SELECT * FROM User WHERE id = :id")
+    fun getUsuarioConPokemon(
+        id: Long
+    ): LiveData<UserMonstruo>
+}
+*******************************************
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import model.Monstruo
+
+@Dao
+interface MonstruoDao {
+
+    @Insert
+    fun insertar(monstruo: Monstruo): Long
+    @Query("SELECT * FROM Monstruo")
+    fun getAll(): LiveData<List<Monstruo>>
+
+    @Query("SELECT * FROM Monstruo WHERE id = :id")
+    fun getById(id: Long): Monstruo?
+
+    // Pokemon de un usuario
+    @Query("""
+        SELECT * FROM Monstruo
+        WHERE userId = :usuarioId
+    """)
+    fun getPokemonUsuario(
+        usuarioId: Long
+    ): LiveData<List<Monstruo>>
+}
+*******************************************
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import model.Monstruo
+import model.User
+
+@Database(
+    entities = [
+        User::class,
+        Monstruo::class
+    ],
+    version = 1,
+    exportSchema = false
+)
+
+abstract class AppDataBase : RoomDatabase() {
+
+    abstract fun userDao(): UserDao
+    abstract fun monstruoDao(): MonstruoDao
+
+    companion object {
+
+        @Volatile
+        private var INSTANCE: AppDataBase? = null
+
+        fun getDatabase(
+            context: Context
+        ): AppDataBase {
+
+            return INSTANCE ?: synchronized(this) {
+
+                val instance =
+                    Room.databaseBuilder(
+                        context.applicationContext,
+                        AppDataBase::class.java,
+                        "pokemon_db"
+                    )
+                        .allowMainThreadQueries()
+                        .build()
+
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
+**********************************
+import androidx.lifecycle.LiveData
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Transaction
+import data.MonstruoDao
+import data.UserDao
+import model.Monstruo
+import model.User
+import model.UserMonstruo
+
+class Repository(
+
+    private val userDao: UserDao,
+    private val monstruoDao: MonstruoDao
+
+) {
+
+    fun inserta(user: User): Long=userDao.insertar(user)
+    fun getAllUser(): LiveData<List<User>>{return userDao.getAll()}
+    fun getUserId(id: Long): User?=userDao.getById(id)
+    fun getUsuarioPokemon(
+        id: Long
+    ): LiveData<UserMonstruo>{return  userDao.getUsuarioConPokemon(id)}
+
+    fun insertaMonstruo(monstruo: Monstruo): Long=monstruoDao.insertar(monstruo)
+
+    fun getAllMonstruo(): LiveData<List<Monstruo>>{return monstruoDao.getAll()}
+
+    fun getMonstruoId(id: Long): Monstruo?=monstruoDao.getById(id)
+    fun getPokemonUsuario(
+        usuarioId: Long
+    ): LiveData<UserMonstruo>{return  userDao.getUsuarioConPokemon(usuarioId)}
+    fun comprobaUser(passwordD:String,nombreP:String):Long?=userDao.comprobarUser(nombreP,passwordD)
+
+}
+****************************************************
+
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import data.AppDataBase
+import model.Monstruo
+import model.User
+import model.UserMonstruo
+import repo.Repository
+
+
+class AppViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val repository:
+            Repository
+
+    val monstruoListaTodo: LiveData<List<Monstruo>>
+    val userListaTodo: LiveData<List<User>>
+
+    init {
+
+        val daoUser =
+            AppDataBase
+                .getDatabase(application).userDao()
+        val daomonstruo =
+            AppDataBase
+                .getDatabase(application).monstruoDao()
+
+        repository =
+            Repository(
+                daoUser,
+                daomonstruo
+            )
+        monstruoListaTodo = repository.getAllMonstruo()
+        userListaTodo = repository.getAllUser()
+    }
+
+    fun insertaUser(user: User): Long = repository.inserta(user)
+
+    fun getUserPorId(id: Long): User? = repository.getUserId(id)
+    fun getUserMonstruo(
+        id: Long
+    ): LiveData<UserMonstruo> {
+        return repository.getPokemonUsuario(id)
+    }
+
+    fun insertarMonstruo(monstruo: Monstruo): Long = repository.insertaMonstruo(monstruo)
+
+
+    fun getMonstruoId(id: Long): Monstruo? = repository.getMonstruoId(id)
+    fun mostruoUsuario(
+        usuarioId: Long
+    ): LiveData<UserMonstruo> {
+        return repository.getPokemonUsuario(usuarioId)
+    }
+    fun compUser(passwordD:String,nombreP:String):Long?=repository.comprobaUser(nombreP,passwordD)
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

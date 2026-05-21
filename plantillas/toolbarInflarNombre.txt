@@ -1,0 +1,18 @@
+ override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_item_principal, menu)
+        val id = preferencias.getLong(MainActivity.ID_SESION, -1L)
+        if (id != -1L) {//NOMBRE AL INFLAR LA LISTA
+            val user = viewModel.userId(id)
+            user?.let {
+                menu?.findItem(R.id.login)?.title = it.nombre  // ← findItem en vez de item
+            }
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.cerrar -> {
+      cerrarSesion()
+                true
+            }
