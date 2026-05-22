@@ -1,0 +1,14 @@
+binding.lista.choiceMode = ListView.CHOICE_MODE_SINGLE
+
+
+<ListView
+    android:id="@+id/lista"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:choiceMode="singleChoice"
+    android:listSelector="@android:color/holo_blue_light"/><ListView
+    android:id="@+id/lista"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:choiceMode="singleChoice"
+    android:listSelector="@android:color/holo_blue_light"/>

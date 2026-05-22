@@ -10,6 +10,9 @@ import android.widget.TextView
 import com.example.trailtracker.R
 import model.Senda
 
+
+OJOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+ESTE ADAPTER ES DE LISTA SI ES SPINNER METE EL METODO DROP PARA EL INDICE 0
 class AdapterLista(
     context: Context,
     private val lista: MutableList<Senda>,
