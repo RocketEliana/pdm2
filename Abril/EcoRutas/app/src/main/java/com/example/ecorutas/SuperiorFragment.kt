@@ -1,6 +1,8 @@
 package com.example.ecorutas
 
+import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -29,7 +31,12 @@ class SuperiorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // bundle.putLong("idOrigen",idOrigen)
         val idOrigen=arguments?.getLong("idOrigen",-1L)
-        adapter= AdapterSpinner(requireContext(),mutableListOf())
+        adapter= AdapterSpinner(requireContext(),mutableListOf()) { telefono ->
+            val intent = Intent(Intent.ACTION_DIAL).apply {
+                data =
+                    Uri.parse("tel:$telefono")//ojo con esto,no quitar el tel,saca variable con binding
+            }
+        }
         binding.spinnerDestino.adapter=adapter
         viewModel.listaEspacio.observe(viewLifecycleOwner){
             lista->val listaFinal=lista.filter { it.id != idOrigen }

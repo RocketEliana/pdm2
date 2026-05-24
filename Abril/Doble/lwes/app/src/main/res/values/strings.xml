@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">lwes</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="mi_log">Mi Log</string>
+    <string name="registro">REGISTRO</string>
+    <string name="cambiar_idioma">EN</string>
+</resources>

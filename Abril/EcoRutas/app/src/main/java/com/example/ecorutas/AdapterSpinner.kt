@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import model.Espacio
 
-class AdapterSpinner(context: Context, private val lista: MutableList<Espacio>) :
+class AdapterSpinner(context: Context, private val lista: MutableList<Espacio> ,private val onLlamar: (String) -> Unit) :
     ArrayAdapter<Espacio>(context, 0, lista) {
 
     /**
@@ -32,7 +32,7 @@ class AdapterSpinner(context: Context, private val lista: MutableList<Espacio>) 
             telefono.text=it.telefono
             imagen.setImageResource(it.icono)
         }
-
+        telefono.setOnClickListener { onLlamar(telefono.text.toString()) }
         return itemView
     }
 

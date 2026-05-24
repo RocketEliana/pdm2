@@ -3,6 +3,7 @@ package com.example.ecorutas
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -71,52 +72,61 @@ class MainActivity : AppCompatActivity() {
             }
             preferencias.edit().putBoolean(PRIMERAEJECUCION,false).apply()
         }
-        adapter= AdapterSpinner(this,mutableListOf())
-        binding.spinnerOrigen.adapter=adapter
-        viewModel.listaEspacio.observe(this){
-            lista->adapter.actualizarLista(lista)
-            if (id_seleccionado != -1L) {
-                val posicion = lista.indexOfFirst { it.id == id_seleccionado }//busca la primera posición que cumpla una condición
-                if (posicion != -1) {
-                    binding.spinnerOrigen.setSelection(posicion)
-                    binding.imagenInicio.setImageResource(lista[posicion].icono)
-                }
+        adapter= AdapterSpinner(this,mutableListOf()) { telefono ->
+            val intent = Intent(Intent.ACTION_DIAL).apply {
+                data =
+                    Uri.parse("tel:$telefono")
             }
-
-
-        }
-        binding.spinnerOrigen.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                if (primeraSeleccion) {
-                    primeraSeleccion = false
-                    return
-                }
-
-                val espacio = adapter.getItem(position)
-                espacio?.let {
-                    binding.imagenInicio.setImageResource(it.icono)
-                    preferencias.edit().putLong(ID_S, it.id).apply()
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-        binding.imagenInicio.setOnClickListener {
-            id_seleccionado=preferencias.getLong(ID_S,-1L)
-            if(id_seleccionado==-1L){return@setOnClickListener}
-            val intent= Intent(this, MainActivity2::class.java)
-            intent.putExtra("idOrigen",id_seleccionado)
             startActivity(intent)
         }
+            //ojo con esto,no quitar el tel,saca variable con binding}
+                binding.spinnerOrigen.adapter = adapter
+                viewModel.listaEspacio.observe(this) { lista ->
+                    adapter.actualizarLista(lista)
+                    if (id_seleccionado != -1L) {
+                        val posicion =
+                            lista.indexOfFirst { it.id == id_seleccionado }//busca la primera posición que cumpla una condición
+                        if (posicion != -1) {
+                            binding.spinnerOrigen.setSelection(posicion)
+                            binding.imagenInicio.setImageResource(lista[posicion].icono)
+                        }
+                    }
 
 
+                }
+                binding.spinnerOrigen.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
+                            if (primeraSeleccion) {
+                                primeraSeleccion = false
+                                return
+                            }
+
+                            val espacio = adapter.getItem(position)
+                            espacio?.let {
+                                binding.imagenInicio.setImageResource(it.icono)
+                                preferencias.edit().putLong(ID_S, it.id).apply()
+                            }
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>?) {}
+                    }
+                binding.imagenInicio.setOnClickListener {
+                    id_seleccionado = preferencias.getLong(ID_S, -1L)
+                    if (id_seleccionado == -1L) {
+                        return@setOnClickListener
+                    }
+                    val intent = Intent(this, MainActivity2::class.java)
+                    intent.putExtra("idOrigen", id_seleccionado)
+                    startActivity(intent)
+                }
 
 
-    }
+            }
 
-}
+        }

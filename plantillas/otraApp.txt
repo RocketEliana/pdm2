@@ -1,0 +1,14 @@
+  boton.setOnClickListener {
+
+                val intent= Intent()
+                intent.component= ComponentName(
+                    "com.example.lwes",
+                    "com.example.lwes.MainActivity"
+                )
+                intent.putExtra("cate",nombre.text.toString())
+          
+                val chooser= Intent.createChooser(intent,"Abrir con..")
+                startActivity(chooser)
+
+
+        }
